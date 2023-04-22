@@ -7,7 +7,7 @@ export default class Preview {
 
   private context: CanvasRenderingContext2D;
   private image: HTMLImageElement;
-  private imageData: Uint8ClampedArray;
+  private colors: Color[];
 
   private opacity: number | undefined;
   private backgroundColor: Color | undefined;
@@ -26,7 +26,7 @@ export default class Preview {
 
     this.context = context;
     this.image = image;
-    this.imageData = new Uint8ClampedArray(0);
+    this.colors = [];
   }
 
   handleReadUpload = () => {
@@ -49,6 +49,21 @@ export default class Preview {
     const { preview, context, image, opacity, backgroundColor } = this;
     const { width, height } = image;
 
+    const imageDataToColorArray = (imageData: Uint8ClampedArray) => {
+      const colors = [];
+
+      for (let i = 0; i < imageData.length; i += 4) {
+        const r = imageData[i + 0];
+        const g = imageData[i + 1];
+        const b = imageData[i + 2];
+        const a = imageData[i + 3];
+
+        colors.push(new Color(r, g, b, a));
+      }
+
+      return colors;
+    };
+
     if (width === 0 || height === 0) return false;
 
     preview.width = width;
@@ -61,7 +76,7 @@ export default class Preview {
     const values = imageData.data;
 
     if (!opacity && !backgroundColor) {
-      this.imageData = values;
+      this.colors = imageDataToColorArray(values);
       return true;
     }
 
@@ -78,7 +93,7 @@ export default class Preview {
       context.putImageData(imageData, 0, 0);
 
       if (!backgroundColor) {
-        this.imageData = values;
+        this.colors = imageDataToColorArray(values);
         return true;
       }
     }
@@ -97,7 +112,7 @@ export default class Preview {
 
       context.drawImage(offscreenCanvas, 0, 0);
 
-      this.imageData = context.getImageData(0, 0, width, height).data;
+      this.colors = imageDataToColorArray(context.getImageData(0, 0, width, height).data);
     }
   };
 
@@ -106,26 +121,21 @@ export default class Preview {
   };
 
   getColorsAt = (startX: number, startY: number, width: number, height: number) => {
-    const { preview, imageData } = this;
+    const { preview, colors } = this;
 
-    const colors = [];
+    const targetColors = [];
 
     for (let y = startY; y < startY + height; y++) {
       for (let x = startX; x < startX + width; x++) {
-        const i = (y * preview.width + x) * 4;
+        const i = y * preview.width + x;
 
-        if (i < 0 || i + 3 > imageData.length) continue;
+        if (i < 0 || i > colors.length) continue;
 
-        const r = imageData[i + 0];
-        const g = imageData[i + 1];
-        const b = imageData[i + 2];
-        const a = imageData[i + 3];
-
-        colors.push(new Color(r, g, b, a));
+        targetColors.push(colors[i]);
       }
     }
 
-    return colors;
+    return targetColors;
   };
 
   setBackgroundColor = (color: Color) => {

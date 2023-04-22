@@ -13,10 +13,10 @@ export default class Color {
 
     colorChannels.forEach((channel) => {
       const values = colors.map((pixel) => pixel[channel]) as number[];
+      const sortedValues = values.sort();
 
       if (averagingMethod === "squared") {
-        const squaredValues = values.map((value) => Math.pow(value, 2));
-        const totalSquaredValue = squaredValues.reduce((total, value) => total + value, 0);
+        const totalSquaredValue = sortedValues.reduce((total, value) => total + value * value, 0);
         const meanSquaredValue = totalSquaredValue / numberOfPixels;
         const meanValue = Math.sqrt(meanSquaredValue);
 
@@ -24,13 +24,12 @@ export default class Color {
       }
 
       if (averagingMethod === "simple") {
-        const totalValue = values.reduce((total, value) => total + value, 0);
+        const totalValue = sortedValues.reduce((total, value) => total + value, 0);
         const meanValue = totalValue / numberOfPixels;
 
         mean[channel] = meanValue;
       }
 
-      const sortedValues = values.sort();
       const medianIndex = Math.floor(sortedValues.length / 2);
 
       median[channel] = sortedValues[medianIndex];

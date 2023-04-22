@@ -113,19 +113,18 @@ Color.getMeanMedian = (colors, options) => {
     const colorChannels = ["r", "g", "b", "a"];
     colorChannels.forEach((channel) => {
         const values = colors.map((pixel) => pixel[channel]);
+        const sortedValues = values.sort();
         if (averagingMethod === "squared") {
-            const squaredValues = values.map((value) => Math.pow(value, 2));
-            const totalSquaredValue = squaredValues.reduce((total, value) => total + value, 0);
+            const totalSquaredValue = sortedValues.reduce((total, value) => total + value * value, 0);
             const meanSquaredValue = totalSquaredValue / numberOfPixels;
             const meanValue = Math.sqrt(meanSquaredValue);
             mean[channel] = meanValue;
         }
         if (averagingMethod === "simple") {
-            const totalValue = values.reduce((total, value) => total + value, 0);
+            const totalValue = sortedValues.reduce((total, value) => total + value, 0);
             const meanValue = totalValue / numberOfPixels;
             mean[channel] = meanValue;
         }
-        const sortedValues = values.sort();
         const medianIndex = Math.floor(sortedValues.length / 2);
         median[channel] = sortedValues[medianIndex];
     });
