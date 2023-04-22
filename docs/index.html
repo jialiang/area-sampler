@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Area Sampler</title>
+    <meta
+      name="description"
+      content="A color picker that tells you the average color of multiple neighbouring pixels." />
+    <meta name="author" content="Jia Liang, hojialiang@yahoo.com" />
+
+    <link rel="icon" type="image/x-icon" href="./favicon.png" />
+    <link rel="canonical" href="https://jialiang.github.io/area-sampler/" />
+
+    <style>
+      html,
+      body {
+        font-family: sans-serif;
+        line-height: 1;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        text-align: center;
+      }
+
+      h1 {
+        margin: 0 0 2rem 0;
+      }
+
+      p {
+        max-width: 40rem;
+      }
+
+      .intro-container {
+        line-height: 1.33;
+        padding: 1rem;
+        text-align: left;
+      }
+
+      .form-container {
+        width: 100%;
+        text-align: left;
+      }
+
+      .options,
+      .results {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        text-align: center;
+        vertical-align: top;
+      }
+
+      .results input {
+        font-family: monospace;
+        width: 16rem;
+      }
+
+      .field-container {
+        display: flex;
+        align-items: stretch;
+        flex-wrap: wrap;
+        background: #fefefe;
+
+        gap: 1.5rem;
+      }
+
+      fieldset {
+        display: flex;
+        align-items: stretch;
+        flex-direction: column;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        padding: 1rem;
+        border: 1px solid #e4e5e9;
+        border-radius: 4px;
+
+        gap: 1rem;
+      }
+
+      legend {
+        font-size: 0.9rem;
+        padding: 0 0.5rem;
+        white-space: normal;
+        color: #777;
+        background: white;
+      }
+
+      fieldset > .field {
+        position: relative;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        padding: 0.5rem;
+        border-radius: 4px;
+        background: white;
+        box-shadow: 0.25rem 0.25rem 1rem rgba(0, 0, 0, 0.1), 0 0 2px rgba(0, 0, 0, 0.2) inset;
+
+        gap: 0.5rem;
+      }
+
+      fieldset > .field::after {
+        position: absolute;
+        right: 2.5rem;
+        bottom: 1rem;
+        content: attr(data-suffix);
+        color: #777;
+      }
+
+      fieldset > .field > .top-row {
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        white-space: nowrap;
+
+        gap: 0.5rem;
+      }
+
+      input,
+      select {
+        font-size: 1rem;
+        line-height: 1;
+        box-sizing: border-box;
+        width: 7.5rem;
+        margin: 0;
+        padding: 0.35rem;
+        vertical-align: middle;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background: white;
+      }
+
+      input[type="file"] {
+        width: 15rem;
+      }
+
+      input[readonly] {
+        background: #efefef;
+      }
+
+      .options input,
+      .options select {
+        min-width: 100%;
+      }
+
+      .color-preview {
+        position: relative;
+        display: inline-block;
+        overflow: hidden;
+        width: 1.66rem;
+        height: 1.66rem;
+        vertical-align: middle;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background: white;
+      }
+
+      .color-preview .background,
+      .color-preview .foreground {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      button {
+        font-size: 1rem;
+        line-height: 1;
+        position: relative;
+        top: -1px;
+        display: inline-block;
+        padding: 0.33rem 0.5rem;
+        cursor: pointer;
+        vertical-align: middle;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background: #eee;
+        box-shadow: 0.125rem 0.125rem 0.5rem rgba(0, 0, 0, 0.1);
+      }
+
+      button[type="reset"] {
+        margin-top: 1.5rem;
+      }
+
+      @media (hover: hover) {
+        button:hover {
+          background: #d6d6d6;
+        }
+      }
+
+      button:active {
+        transform: translateY(1px);
+        box-shadow: none;
+      }
+
+      .hint {
+        line-height: 1.33;
+        display: block;
+        padding: 0 1rem;
+      }
+
+      @media (pointer: fine) {
+        .hint {
+          display: none;
+        }
+      }
+
+      .canvas-container {
+        position: relative;
+        display: inline-block;
+        overflow: auto;
+        max-width: calc(100% - 2rem);
+        max-height: calc(100% - 2rem);
+        margin: 1rem;
+        outline: 2px dotted black;
+        background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAGklEQVR4AWNYJYoK92ihwpGiAF0AXcMIUQAAbIfSgRmCFqkAAAAASUVORK5CYII=");
+
+        touch-action: pan-x pan-y;
+      }
+
+      .canvas-container canvas {
+        display: block;
+      }
+
+      .selector {
+        position: absolute;
+        top: -4px;
+        left: -4px;
+        width: 0;
+        height: 0;
+        animation: 1s blink infinite;
+        pointer-events: none;
+        outline: 1px solid white;
+      }
+
+      @keyframes blink {
+        50% {
+          outline-color: black;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="intro-container">
+      <h1>Area Sampler</h1>
+
+      <p>
+        A color picker that tells you the average color of multiple neighbouring pixels. Useful for
+        picking colors from noisy backgrounds. I'm sure there's already tools out there that serve
+        the same purpose but I can't find them on Google, so I made my own.
+      </p>
+    </div>
+
+    <div class="form-container">
+      <form class="options">
+        <div class="field-container">
+          <fieldset>
+            <legend>Image Options</legend>
+            <label class="field" data-suffix="%">
+              <div class="top-row">Image Opacity</div>
+              <input type="number" name="opacityPercentage" min="0" max="1000" value="100" />
+            </label>
+            <label class="field">
+              <div class="top-row">Enable Background Color</div>
+              <select name="transparencyType">
+                <option value="straight" selected>No</option>
+                <option value="premultiplied">Yes</option>
+              </select>
+            </label>
+            <label class="field">
+              <div class="top-row">Background Color</div>
+              <input type="color" name="backgroundColor" value="#ffffff" />
+            </label>
+          </fieldset>
+
+          <fieldset>
+            <legend>Result Options</legend>
+            <label class="field">
+              <div class="top-row">Result Format</div>
+              <select name="resultFormat">
+                <option value="rgb" selected>RGB</option>
+                <option value="hex">Hexadecimal</option>
+                <option value="hsl">HSL</option>
+              </select>
+            </label>
+            <label class="field">
+              <div class="top-row">Hide Alpha Channel</div>
+              <select name="hideAlphaChannel">
+                <option value="opaqueOnly" selected>If opaque</option>
+                <option value="never">Never</option>
+                <option value="always">Always</option>
+              </select>
+            </label>
+            <label class="field">
+              <div class="top-row">Averaging Method</div>
+              <select name="averagingMethod">
+                <option value="squared" selected>Squared</option>
+                <option value="simple">Simple</option>
+              </select>
+            </label>
+          </fieldset>
+
+          <fieldset>
+            <legend>Image File</legend>
+            <label class="field">
+              <div>Upload Image</div>
+              <input type="file" name="imageUpload" accept="image/*" />
+            </label>
+            <button id="example-image-button" type="button">Use Example Image</button>
+          </fieldset>
+        </div>
+
+        <button type="reset">Reset All Options</button>
+      </form>
+
+      <form class="results">
+        <div class="field-container">
+          <fieldset>
+            <legend>Averages</legend>
+            <div class="field">
+              <div class="top-row">
+                <label for="mean">Mean</label>
+                <span>
+                  <span class="color-preview" name="meanResultColor">
+                    <div class="background"></div>
+                    <div class="foreground"></div>
+                  </span>
+                  <button class="copy">Copy</button>
+                </span>
+              </div>
+              <input id="mean" type="text" name="meanResultText" readonly />
+            </div>
+            <div class="field">
+              <div class="top-row">
+                <label for="median">Median</label>
+                <span>
+                  <span class="color-preview" name="medianResultColor">
+                    <div class="background"></div>
+                    <div class="foreground"></div>
+                  </span>
+                  <button class="copy">Copy</button>
+                </span>
+              </div>
+              <input id="median" type="text" name="medianResultText" readonly />
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Min and Max</legend>
+            <div class="field">
+              <div class="top-row">
+                <label for="lightest">Lightest</label>
+                <span>
+                  <span class="color-preview" name="lightestResultColor">
+                    <div class="background"></div>
+                    <div class="foreground"></div>
+                  </span>
+                  <button class="copy">Copy</button>
+                </span>
+              </div>
+              <input id="lightest" type="text" name="lightestResultText" readonly />
+            </div>
+            <div class="field">
+              <div class="top-row">
+                <label for="darkest">Darkest</label>
+                <span>
+                  <div class="color-preview" name="darkestResultColor">
+                    <div class="background"></div>
+                    <div class="foreground"></div>
+                  </div>
+                  <button class="copy">Copy</button>
+                </span>
+              </div>
+              <input id="darkest" type="text" name="darkestResultText" readonly />
+            </div>
+          </fieldset>
+        </div>
+      </form>
+    </div>
+
+    <p class="hint"
+      >For touch: Use&nbsp;1&nbsp;finger&nbsp;to&nbsp;scroll, 2&nbsp;fingers&nbsp;to&nbsp;select.</p
+    >
+
+    <div class="canvas-container">
+      <canvas class="preview"></canvas>
+      <div class="selector"></div>
+    </div>
+
+    <script type="module" src="./index.js"></script>
+  </body>
+</html>
