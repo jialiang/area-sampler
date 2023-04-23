@@ -105,29 +105,37 @@ class Color {
         return `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`;
     }
 }
+Color.squaredValues = [...Array(256).keys()].map((value) => value * value);
 Color.getMeanMedian = (colors, options) => {
     const averagingMethod = options.averagingMethod;
     const numberOfPixels = colors.length;
     const mean = new Color();
     const median = new Color();
     const colorChannels = ["r", "g", "b", "a"];
-    colorChannels.forEach((channel) => {
-        const values = colors.map((pixel) => pixel[channel]);
+    for (let i = 0; i < colorChannels.length; i++) {
+        const channel = colorChannels[i];
+        const values = [];
+        for (let i = 0; i < colors.length; i++)
+            values.push(colors[i][channel]);
         const sortedValues = values.sort();
         if (averagingMethod === "squared") {
-            const totalSquaredValue = sortedValues.reduce((total, value) => total + value * value, 0);
+            let totalSquaredValue = 0;
+            for (let i = 0; i < values.length; i++)
+                totalSquaredValue += Color.squaredValues[values[i]];
             const meanSquaredValue = totalSquaredValue / numberOfPixels;
             const meanValue = Math.sqrt(meanSquaredValue);
             mean[channel] = meanValue;
         }
         if (averagingMethod === "simple") {
-            const totalValue = sortedValues.reduce((total, value) => total + value, 0);
+            let totalValue = 0;
+            for (let i = 0; i < values.length; i++)
+                totalValue += values[i];
             const meanValue = totalValue / numberOfPixels;
             mean[channel] = meanValue;
         }
         const medianIndex = Math.floor(sortedValues.length / 2);
         median[channel] = sortedValues[medianIndex];
-    });
+    }
     return [mean, median];
 };
 Color.getLightestDarkest = (colors) => {
