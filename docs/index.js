@@ -26,9 +26,17 @@ function init() {
         if (!selection.info)
             return;
         const { top, left, width, height } = selection.info;
+        const a = performance.now();
         const selectedColors = preview.getColorsAt(left, top, width, height);
+        const b = performance.now();
+        console.log("getColorsAt: ", b - a);
+        console.log(selectedColors);
         const [meanColor, medianColor] = Color.getMeanMedian(selectedColors, options);
+        const c = performance.now();
+        console.log("meanMedian: ", c - b);
         const [lightestColor, darkestColor] = Color.getLightestDarkest(selectedColors);
+        const d = performance.now();
+        console.log("lightestDarkest: ", d - c);
         results.setResult("mean", meanColor, options);
         results.setResult("median", medianColor, options);
         results.setResult("lightest", lightestColor, options);
