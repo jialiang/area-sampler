@@ -1,5 +1,5 @@
-import Color from "./Color.js";
-import Options from "./Options.js";
+import Color from "./Color";
+import Options from "./Options";
 
 type resultElementInfo = {
   textElement: HTMLInputElement;

@@ -1,5 +1,5 @@
-import Options from "./Options.js";
-import { round } from "./Util.js";
+import Options from "./Options";
+import { round } from "./Util";
 
 export default class Color {
   static squaredValues = [...Array(256).keys()].map((value) => value * value);
