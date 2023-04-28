@@ -11,6 +11,8 @@ export default class Color {
     const mean = new Color();
     const median = new Color();
 
+    if (numberOfPixels === 0) return [mean, median];
+
     const colorChannels = ["r", "g", "b", "a"] as const;
 
     for (let i = 0; i < colorChannels.length; i++) {
@@ -52,6 +54,8 @@ export default class Color {
   };
 
   static getLightestDarkest = (colors: Color[]) => {
+    if (colors.length === 0) return [new Color(), new Color()];
+
     const sRGBtoLinear = (channel: number) => {
       if (channel <= 0.04045) return channel / 12.92;
 
@@ -75,7 +79,7 @@ export default class Color {
     const lightestIndex = lightnessValues.indexOf(lightnestValue);
     const darkestIndex = lightnessValues.indexOf(darkestValue);
 
-    return [colors[lightestIndex], colors[darkestIndex]];
+    return [new Color(colors[lightestIndex]), new Color(colors[darkestIndex])];
   };
 
   static blendColors = (background: Color, foreground: Color) => {
