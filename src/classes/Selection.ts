@@ -1,4 +1,4 @@
-import { debounce } from "./Util.js";
+import { debounce } from "./Util";
 
 export default class Selection {
   readonly outline: HTMLElement;

@@ -4,7 +4,8 @@
     "alwaysStrict": true,
     "strict": true,
     "lib": ["ES6", "DOM"],
-    "target": "ES6"
+    "target": "ES6",
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["./src/**/*.ts"]
 }
