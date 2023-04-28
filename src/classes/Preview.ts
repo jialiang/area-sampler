@@ -47,7 +47,10 @@ export default class Preview {
 
   handleUpdateImage = () => {
     const { preview, context, image, opacity, backgroundColor } = this;
-    const { width, height } = image;
+    let { width, height } = image;
+
+    if (!width) width = 300;
+    if (!height) height = 200;
 
     const imageDataToColorArray = (imageData: Uint8ClampedArray) => {
       const colors = [];
@@ -63,8 +66,6 @@ export default class Preview {
 
       return colors;
     };
-
-    if (width === 0 || height === 0) return false;
 
     preview.width = width;
     preview.height = height;
