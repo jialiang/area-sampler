@@ -75,6 +75,7 @@ export default class Results {
     if (resultFormat === "rgb") value = includeAlpha ? color.toRgba() : color.toRgb();
     if (resultFormat === "hex") value = includeAlpha ? color.toHex8() : color.toHex6();
     if (resultFormat === "hsl") value = includeAlpha ? color.toHsla() : color.toHsl();
+    if (resultFormat === "svg") value = color.getClosedNamedColor();
 
     if (!value) throw `Invalid resultFormat option: ${resultFormat.toString()}`;
 

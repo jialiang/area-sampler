@@ -5,7 +5,8 @@
     "strict": true,
     "lib": ["ES6", "DOM"],
     "target": "ES6",
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "nodenext"
   },
   "include": ["./src/**/*.ts"]
 }
