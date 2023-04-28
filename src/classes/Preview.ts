@@ -75,16 +75,16 @@ export default class Preview {
     const imageData = context.getImageData(0, 0, width, height);
     const values = imageData.data;
 
-    if (!opacity && !backgroundColor) {
+    if (opacity == null && backgroundColor == null) {
       this.colors = imageDataToColorArray(values);
       return true;
     }
 
     // Handle Opacity
 
-    if (opacity) {
+    if (opacity != null) {
       for (let i = 0; i < values.length; i += 4) {
-        const alpha = values[i + 3] * (opacity || 1);
+        const alpha = values[i + 3] * opacity;
         const clampedAlpha = clamp(alpha, 0, 255);
 
         values[i + 3] = clampedAlpha;
@@ -100,7 +100,7 @@ export default class Preview {
 
     // Handle Background Color
 
-    if (backgroundColor) {
+    if (backgroundColor != null) {
       const offscreenCanvas = new OffscreenCanvas(width, height);
       const offscreenContext = offscreenCanvas.getContext("2d");
 
