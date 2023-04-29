@@ -1,4 +1,4 @@
-import { debounce } from "./Util";
+import { debounce } from "./Util.ts";
 
 export default class Selection {
   readonly outline: HTMLElement;

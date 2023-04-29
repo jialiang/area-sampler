@@ -2,7 +2,7 @@ const { dest, src, task, series, parallel, watch } = require("gulp");
 
 const del = require("del");
 const browserify = require("browserify");
-const tsify = require("tsify");
+const babelify = require("babelify");
 const uglifyify = require("uglifyify");
 const fancyLog = require("fancy-log");
 const source = require("vinyl-source-stream");
@@ -20,7 +20,10 @@ const js = () =>
     cache: {},
     packageCache: {},
   })
-    .plugin(tsify)
+    .transform(babelify, {
+      presets: ["@babel/preset-env", "@babel/preset-typescript"],
+      extensions: [".ts"],
+    })
     .transform(uglifyify, { global: true })
     .bundle()
     .on("error", function (err) {
