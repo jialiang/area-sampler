@@ -1,6 +1,6 @@
-import Color from "./Color";
-import Options from "./Options";
-import { toast } from "./Util";
+import Color from "./Color.ts";
+import Options from "./Options.ts";
+import { toast } from "./Util.ts";
 
 type resultElementInfo = {
   textElement: HTMLInputElement;

@@ -6,7 +6,9 @@
     "lib": ["ES6", "DOM"],
     "target": "ES6",
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "nodenext"
+    "moduleResolution": "nodenext",
+    "noEmit": true,
+    "allowImportingTsExtensions": true
   },
   "include": ["./src/**/*.ts"]
 }

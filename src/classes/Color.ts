@@ -1,7 +1,7 @@
 import { rgb2lab, deltaE as getDeltaE } from "rgb-lab";
 
-import Options from "./Options";
-import { round } from "./Util";
+import Options from "./Options.ts";
+import { round } from "./Util.ts";
 
 export default class Color {
   static squaredValues = [...Array(256).keys()].map((value) => value * value);

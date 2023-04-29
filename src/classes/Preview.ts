@@ -1,5 +1,5 @@
-import Color from "./Color";
-import { clamp } from "./Util";
+import Color from "./Color.ts";
+import { clamp } from "./Util.ts";
 
 export default class Preview {
   readonly preview: HTMLCanvasElement;
