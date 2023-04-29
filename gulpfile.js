@@ -3,6 +3,7 @@ const { dest, src, task, series, parallel, watch } = require("gulp");
 const del = require("del");
 const browserify = require("browserify");
 const tsify = require("tsify");
+const uglifyify = require("uglifyify");
 const fancyLog = require("fancy-log");
 const source = require("vinyl-source-stream");
 const buffer = require("vinyl-buffer");
@@ -20,7 +21,7 @@ const js = () =>
     packageCache: {},
   })
     .plugin(tsify)
-    .transform("uglifyify", { global: true })
+    .transform(uglifyify, { global: true })
     .bundle()
     .on("error", function (err) {
       fancyLog(err.message);
