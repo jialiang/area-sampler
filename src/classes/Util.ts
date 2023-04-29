@@ -12,3 +12,21 @@ export const round = (value: number, decimalPlaces = 0) =>
 
 export const clamp = (value: number, min: number, max: number) =>
   Math.max(Math.min(value, max), min);
+
+export const toast = (message: string) => {
+  const toast = document.createElement("div");
+
+  toast.textContent = message;
+  toast.className = "toast";
+  toast.setAttribute("role", "status");
+
+  const toastContainer = document.querySelector(".toast-container");
+
+  if (toastContainer) {
+    toastContainer.appendChild(toast);
+
+    setTimeout(() => {
+      toastContainer.removeChild(toast);
+    }, 1500);
+  }
+};

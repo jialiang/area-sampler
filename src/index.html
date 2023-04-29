@@ -243,6 +243,50 @@
           outline-color: black;
         }
       }
+
+      .toast-container {
+        position: fixed;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        display: flex;
+        overflow: hidden;
+        align-items: center;
+        flex-direction: column;
+        justify-content: end;
+        height: 100%;
+        padding: 1rem;
+        pointer-events: none;
+
+        gap: 1rem;
+      }
+
+      .toast {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        transform: translateY(100%);
+        animation: 1.5s fade-out forwards;
+        pointer-events: initial;
+        color: white;
+        border-radius: 1rem;
+        background: #636363;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+      }
+
+      @keyframes fade-out {
+        15% {
+          transform: translateY(0);
+          opacity: 1;
+        }
+        85% {
+          transform: translateY(0);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-100%);
+          opacity: 0;
+        }
+      }
     </style>
   </head>
   <body>
@@ -393,6 +437,8 @@
       <canvas class="preview" width="300" height="200"></canvas>
       <div class="selector"></div>
     </div>
+
+    <div class="toast-container"></div>
 
     <script type="module" src="./bundle.js"></script>
   </body>
