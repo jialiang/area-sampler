@@ -1,5 +1,6 @@
 import Color from "./Color";
 import Options from "./Options";
+import { toast } from "./Util";
 
 type resultElementInfo = {
   textElement: HTMLInputElement;
@@ -25,6 +26,7 @@ export default class Results {
         copyButton.addEventListener("click", (e) => {
           e.preventDefault();
           navigator.clipboard.writeText(textElement.value);
+          toast(`Copied ${textElement.value}`);
         });
       }
 

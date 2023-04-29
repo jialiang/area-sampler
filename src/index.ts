@@ -3,6 +3,7 @@ import Options from "./classes/Options";
 import Preview from "./classes/Preview";
 import Selection from "./classes/Selection";
 import Results from "./classes/Results";
+import { toast } from "./classes/Util";
 
 function init() {
   const $ = (selector: string): HTMLElement[] => Array.from(document.querySelectorAll(selector));
@@ -52,18 +53,25 @@ function init() {
   const resetButton = $("button[type=reset]")[0];
   const saveButton = $("button[name=save")[0];
 
-  exampleImageButton.addEventListener("click", () => {
+  exampleImageButton.addEventListener("click", (e) => {
+    e.preventDefault();
     selection.clear();
     preview.loadExampleImage();
   });
 
-  resetButton.addEventListener("click", () => {
+  resetButton.addEventListener("click", (e) => {
+    e.preventDefault();
     optionsForm.reset();
     options.triggerAllBeforeChangeCallbacks();
     calculate();
+    toast("Options reset!");
   });
 
-  saveButton.addEventListener("click", options.save);
+  saveButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    options.save();
+    toast("Options saved!");
+  });
 
   options.onBeforeChange("opacityPercentage", () => {
     const opacityPercent = options.opacityPercentage;
