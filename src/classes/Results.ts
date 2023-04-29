@@ -17,7 +17,7 @@ export default class Results {
     this.resultElementHashmap = {};
 
     resultFields.forEach((resultField) => {
-      const textElement = resultField.querySelector("input[type=text]") as HTMLInputElement;
+      const textElement = resultField.querySelector("input") as HTMLInputElement;
       const foregroundElement = resultField.querySelector(".foreground") as HTMLElement;
       const backgroundElement = resultField.querySelector(".background") as HTMLElement;
       const copyButton = resultField.querySelector(".copy");

@@ -1,3 +1,5 @@
+"use strict";
+
 const { dest, src, task, series, parallel, watch } = require("gulp");
 
 const del = require("del");
@@ -9,6 +11,11 @@ const source = require("vinyl-source-stream");
 const buffer = require("vinyl-buffer");
 const sourcemaps = require("gulp-sourcemaps");
 const uglify = require("gulp-uglify");
+
+const babel = require("@babel/core");
+const requireFromString = require("require-from-string");
+const { renderToStaticMarkup } = require("react-dom/server");
+const fs = require("fs/promises");
 
 const clean = () => del("docs/**", { force: true });
 
@@ -37,7 +44,19 @@ const js = () =>
     .pipe(sourcemaps.write("./"))
     .pipe(dest("docs"));
 
-const html = () => src("./src/**/*.html").pipe(dest("docs"));
+const html = async () => {
+  const transformed = await babel.transformFileAsync("./src/components/FormContainer.tsx", {
+    presets: ["@babel/preset-env", "@babel/preset-typescript", "@babel/preset-react"],
+  });
+
+  const formContainerComponent = requireFromString(transformed.code).default;
+
+  const formContainerString = renderToStaticMarkup(formContainerComponent);
+  const htmlString = await fs.readFile("./src/index.html", { encoding: "utf8" });
+  const hydratedHtmlString = htmlString.replace("<!-- FormContainer -->", formContainerString);
+
+  await fs.writeFile("./docs/index.html", hydratedHtmlString);
+};
 
 const image = () => src("./src/**/*.png").pipe(dest("docs"));
 
