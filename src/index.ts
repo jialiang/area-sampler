@@ -50,6 +50,7 @@ function init() {
 
   const exampleImageButton = $("#example-image-button")[0];
   const resetButton = $("button[type=reset]")[0];
+  const saveButton = $("button[name=save")[0];
 
   exampleImageButton.addEventListener("click", () => {
     selection.clear();
@@ -61,6 +62,8 @@ function init() {
     options.triggerAllBeforeChangeCallbacks();
     calculate();
   });
+
+  saveButton.addEventListener("click", options.save);
 
   options.onBeforeChange("opacityPercentage", () => {
     const opacityPercent = options.opacityPercentage;
@@ -90,4 +93,4 @@ function init() {
   options.onChange = calculate;
 }
 
-requestAnimationFrame(init);
+window.onload = () => requestAnimationFrame(init);

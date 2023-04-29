@@ -37,6 +37,8 @@ export default class Options extends OptionsProxy {
     });
 
     if (callback) this.onChange = callback;
+
+    this.restore();
   }
 
   onBeforeChange = (name: string, newBeforeChangeCallback: () => void) => {
@@ -66,6 +68,35 @@ export default class Options extends OptionsProxy {
 
       if (beforeChangeCallback) beforeChangeCallback();
     });
+  };
+
+  save = () => {
+    const { fieldArray } = this;
+
+    const optionsString = fieldArray.reduce((optionsObject, field) => {
+      if (field.type !== "file") optionsObject[field.name] = field.value;
+
+      return optionsObject;
+    }, {} as { [key: string]: string });
+
+    localStorage.setItem("options", JSON.stringify(optionsString));
+  };
+
+  restore = () => {
+    const { fieldArray } = this;
+    const optionsString = localStorage.getItem("options");
+
+    if (!optionsString) return;
+
+    try {
+      const optionsObject = JSON.parse(optionsString);
+
+      fieldArray.forEach((field) => {
+        if (optionsObject[field.name]) field.value = optionsObject[field.name];
+      });
+    } catch (e) {
+      localStorage.removeItem("options");
+    }
   };
 
   set onChange(newCallback: () => void) {
