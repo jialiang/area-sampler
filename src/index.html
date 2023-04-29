@@ -300,138 +300,11 @@
       </p>
     </div>
 
-    <div class="form-container">
-      <form class="options">
-        <div class="field-container">
-          <fieldset>
-            <legend>Image Options</legend>
-            <label class="field" data-suffix="%">
-              <div class="top-row">Image Opacity</div>
-              <input type="number" name="opacityPercentage" min="0" max="1000" value="100" />
-            </label>
-            <label class="field">
-              <div class="top-row">Enable Background Color</div>
-              <select name="transparencyType">
-                <option value="straight" selected>No</option>
-                <option value="premultiplied">Yes</option>
-              </select>
-            </label>
-            <label class="field">
-              <div class="top-row">Background Color</div>
-              <input type="color" name="backgroundColor" value="#ffffff" />
-            </label>
-          </fieldset>
+    <!-- FormContainer -->
 
-          <fieldset>
-            <legend>Result Options</legend>
-            <label class="field">
-              <div class="top-row">Result Format</div>
-              <select name="resultFormat">
-                <option value="rgb" selected>RGB</option>
-                <option value="hex">Hexadecimal</option>
-                <option value="hsl">HSL</option>
-                <option value="svg">SVG Color Name</option>
-              </select>
-            </label>
-            <label class="field">
-              <div class="top-row">Hide Alpha Channel</div>
-              <select name="hideAlphaChannel">
-                <option value="opaqueOnly" selected>If opaque</option>
-                <option value="never">Never</option>
-                <option value="always">Always</option>
-              </select>
-            </label>
-            <label class="field">
-              <div class="top-row">Averaging Method</div>
-              <select name="averagingMethod">
-                <option value="squared" selected>Squared</option>
-                <option value="simple">Simple</option>
-              </select>
-            </label>
-          </fieldset>
-
-          <fieldset>
-            <legend>Image File</legend>
-            <label class="field">
-              <div>Upload Image</div>
-              <input type="file" name="imageUpload" accept="image/*" />
-            </label>
-            <button id="example-image-button" type="button">Use Example Image</button>
-          </fieldset>
-        </div>
-
-        <button name="save">Save Options</button>
-        <button type="reset">Reset All Options</button>
-      </form>
-
-      <form class="results">
-        <div class="field-container">
-          <fieldset>
-            <legend>Averages</legend>
-            <div class="field">
-              <div class="top-row">
-                <label for="mean">Mean</label>
-                <span>
-                  <span class="color-preview" name="meanResultColor">
-                    <div class="background"></div>
-                    <div class="foreground"></div>
-                  </span>
-                  <button class="copy">Copy</button>
-                </span>
-              </div>
-              <input id="mean" type="text" name="meanResultText" readonly />
-            </div>
-            <div class="field">
-              <div class="top-row">
-                <label for="median">Median</label>
-                <span>
-                  <span class="color-preview" name="medianResultColor">
-                    <div class="background"></div>
-                    <div class="foreground"></div>
-                  </span>
-                  <button class="copy">Copy</button>
-                </span>
-              </div>
-              <input id="median" type="text" name="medianResultText" readonly />
-            </div>
-          </fieldset>
-
-          <fieldset>
-            <legend>Min and Max</legend>
-            <div class="field">
-              <div class="top-row">
-                <label for="lightest">Lightest</label>
-                <span>
-                  <span class="color-preview" name="lightestResultColor">
-                    <div class="background"></div>
-                    <div class="foreground"></div>
-                  </span>
-                  <button class="copy">Copy</button>
-                </span>
-              </div>
-              <input id="lightest" type="text" name="lightestResultText" readonly />
-            </div>
-            <div class="field">
-              <div class="top-row">
-                <label for="darkest">Darkest</label>
-                <span>
-                  <div class="color-preview" name="darkestResultColor">
-                    <div class="background"></div>
-                    <div class="foreground"></div>
-                  </div>
-                  <button class="copy">Copy</button>
-                </span>
-              </div>
-              <input id="darkest" type="text" name="darkestResultText" readonly />
-            </div>
-          </fieldset>
-        </div>
-      </form>
-    </div>
-
-    <p class="hint"
-      >For touch: Use&nbsp;1&nbsp;finger&nbsp;to&nbsp;scroll, 2&nbsp;fingers&nbsp;to&nbsp;select.</p
-    >
+    <p class="hint">
+      For touch: Use&nbsp;1&nbsp;finger&nbsp;to&nbsp;scroll, 2&nbsp;fingers&nbsp;to&nbsp;select.
+    </p>
 
     <div class="canvas-container">
       <canvas class="preview" width="300" height="200"></canvas>
@@ -440,6 +313,6 @@
 
     <div class="toast-container"></div>
 
-    <script type="module" src="./bundle.js"></script>
+    <script src="./bundle.js"></script>
   </body>
 </html>

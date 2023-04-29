@@ -5,24 +5,31 @@
   },
   "extends": ["eslint:recommended"],
   "parserOptions": {
-    "ecmaVersion": 6
+    "ecmaVersion": "latest"
   },
   "overrides": [
     {
-      "files": "./src/**/*.ts",
+      "files": "./src/**/*",
       "env": {
         "es6": true,
         "browser": true
       },
-      "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+      "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:react/recommended"
+      ],
       "parser": "@typescript-eslint/parser",
       "parserOptions": {
         "ecmaVersion": 6,
         "sourceType": "module",
+        "ecmaFeatures": {
+          "jsx": true
+        }
       },
       "plugins": ["@typescript-eslint"],
       "rules": {
-        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-explicit-any": "off"
       }
     }
   ]

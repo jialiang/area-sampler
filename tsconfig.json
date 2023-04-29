@@ -8,7 +8,9 @@
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "nodenext",
     "noEmit": true,
-    "allowImportingTsExtensions": true
+    "allowImportingTsExtensions": true,
+    "allowSyntheticDefaultImports": true,
+    "jsx": "react"
   },
-  "include": ["./src/**/*.ts"]
+  "include": ["./src/**/*"]
 }
