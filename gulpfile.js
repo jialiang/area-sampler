@@ -22,7 +22,10 @@ const js = () =>
     .plugin(tsify)
     .transform("uglifyify", { global: true })
     .bundle()
-    .on("error", fancyLog)
+    .on("error", function (err) {
+      fancyLog(err.message);
+      this.emit("end");
+    })
     .pipe(source("bundle.js"))
     .pipe(buffer())
     .pipe(sourcemaps.init({ loadMaps: true }))
