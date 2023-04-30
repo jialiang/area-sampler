@@ -3,7 +3,7 @@ import Options from "./classes/Options.ts";
 import Preview from "./classes/Preview.ts";
 import Selection from "./classes/Selection.ts";
 import Results from "./classes/Results.ts";
-import { toast } from "./classes/Util.ts";
+import { debounce, toast } from "./classes/Util.ts";
 
 function init() {
   const $ = (selector: string): HTMLElement[] => Array.from(document.querySelectorAll(selector));
@@ -31,12 +31,12 @@ function init() {
   const results = new Results(resultFields);
   const selection = new Selection(selectorElement, previewElement);
 
-  const calculate = () => {
+  const calculate = debounce(async () => {
     if (!selection.info) return;
 
     const { top, left, width, height } = selection.info;
 
-    const selectedColors = preview.getColorsAt(left, top, width, height);
+    const selectedColors = (await preview.getColorsAt(left, top, width, height)) as Color[];
 
     const [meanColor, medianColor] = Color.getMeanMedian(selectedColors, options);
     const [lightestColor, darkestColor] = Color.getLightestDarkest(selectedColors);
@@ -45,7 +45,7 @@ function init() {
     results.setResult("median", medianColor, options);
     results.setResult("lightest", lightestColor, options);
     results.setResult("darkest", darkestColor, options);
-  };
+  });
 
   uploaderElement.addEventListener("change", selection.clear);
 
@@ -89,9 +89,10 @@ function init() {
 
     if (!backgroundColor) throw `Invalid transparency type option: ${transparencyType.toString()}`;
 
-    preview.setBackgroundColor(backgroundColor),
-      results.setBackgroundColor(backgroundColor),
-      calculate();
+    preview.setBackgroundColor(backgroundColor);
+    results.setBackgroundColor(backgroundColor);
+
+    calculate();
   };
 
   options.onBeforeChange("backgroundColor", handleBackgroundSettingsChanged);

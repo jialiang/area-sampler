@@ -1,5 +1,3 @@
-import { debounce } from "./Util.ts";
-
 export default class Selection {
   readonly outline: HTMLElement;
   readonly target: HTMLCanvasElement;
@@ -94,7 +92,7 @@ export default class Selection {
   };
 
   set onSelectionEnd(callback: () => void) {
-    this.callback = debounce(callback);
+    this.callback = callback;
   }
 
   updateInfo = () => {

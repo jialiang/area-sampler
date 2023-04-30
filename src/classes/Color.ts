@@ -672,7 +672,13 @@ export default class Color {
     const lightestIndex = lightnessValues.indexOf(lightnestValue);
     const darkestIndex = lightnessValues.indexOf(darkestValue);
 
-    return [new Color(colors[lightestIndex]), new Color(colors[darkestIndex])];
+    const lightestColor = colors[lightestIndex];
+    const darkestColor = colors[darkestIndex];
+
+    return [
+      new Color(lightestColor.r, lightestColor.g, lightestColor.b, lightestColor.a),
+      new Color(darkestColor.r, darkestColor.g, darkestColor.b, darkestColor.a),
+    ];
   };
 
   static blendColors = (background: Color, foreground: Color) => {
@@ -691,10 +697,8 @@ export default class Color {
   b = 0; // 0-255;
   a = 0; // 0-255;
 
-  constructor(a?: number | string | Color, b?: number, c?: number, d?: number) {
+  constructor(a?: number | string, b?: number, c?: number, d?: number) {
     if (arguments.length === 1) {
-      if (a instanceof Color) return new Color(...a.rgba);
-
       if (typeof a === "string" && a[0] === "#") {
         let hex = a;
 
