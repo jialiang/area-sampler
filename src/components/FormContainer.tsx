@@ -124,7 +124,9 @@ function FormContainer() {
           </fieldset>
         </div>
 
-        <button name="save">Save Options</button>
+        <button name="save" type="button">
+          Save Options
+        </button>
         <button type="reset">Reset All Options</button>
       </form>
 
