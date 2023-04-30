@@ -1,5 +1,5 @@
 import Color from "./Color.ts";
-import { clamp, toast } from "./Util.ts";
+import { clamp, debounce, toast } from "./Util.ts";
 
 export default class Preview {
   readonly preview: HTMLCanvasElement;
@@ -7,7 +7,7 @@ export default class Preview {
 
   private context: CanvasRenderingContext2D;
   private image: HTMLImageElement;
-  private colors: Color[];
+  private colors: Promise<{ r: number; g: number; b: number; a: number }[]> | [];
   private loadingToast: (() => void) | undefined;
 
   private opacity: number | undefined;
@@ -50,33 +50,37 @@ export default class Preview {
     });
   };
 
-  handleUpdateImage = () => {
+  _handleUpdateImage = () => {
     const { preview, context, image, loadingToast, opacity, backgroundColor } = this;
     let { width, height } = image;
 
     if (!width) width = 300;
     if (!height) height = 200;
 
-    const done = () => {
+    const done = (imageData: Uint8ClampedArray) => {
       if (loadingToast) {
         loadingToast();
         delete this.loadingToast;
       }
-    };
 
-    const imageDataToColorArray = (imageData: Uint8ClampedArray) => {
-      const colors = [];
+      this.colors = new Promise((resolve) => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            const colors = [];
 
-      for (let i = 0; i < imageData.length; i += 4) {
-        const r = imageData[i + 0];
-        const g = imageData[i + 1];
-        const b = imageData[i + 2];
-        const a = imageData[i + 3];
+            for (let i = 0; i < imageData.length; i += 4) {
+              const r = imageData[i + 0];
+              const g = imageData[i + 1];
+              const b = imageData[i + 2];
+              const a = imageData[i + 3];
 
-        colors.push(new Color(r, g, b, a));
-      }
+              colors.push({ r, g, b, a });
+            }
 
-      return colors;
+            resolve(colors);
+          });
+        });
+      });
     };
 
     preview.width = width;
@@ -89,8 +93,7 @@ export default class Preview {
     const values = imageData.data;
 
     if (opacity == null && backgroundColor == null) {
-      this.colors = imageDataToColorArray(values);
-      done();
+      done(values);
       return true;
     }
 
@@ -107,8 +110,7 @@ export default class Preview {
       context.putImageData(imageData, 0, 0);
 
       if (!backgroundColor) {
-        this.colors = imageDataToColorArray(values);
-        done();
+        done(values);
         return true;
       }
     }
@@ -127,10 +129,11 @@ export default class Preview {
 
       context.drawImage(offscreenCanvas, 0, 0);
 
-      this.colors = imageDataToColorArray(context.getImageData(0, 0, width, height).data);
-      done();
+      done(context.getImageData(0, 0, width, height).data);
     }
   };
+
+  handleUpdateImage = debounce(this._handleUpdateImage);
 
   loadExampleImage = () => {
     this.loadingToast = toast("Loading example image...", true);
@@ -140,8 +143,10 @@ export default class Preview {
     });
   };
 
-  getColorsAt = (startX: number, startY: number, width: number, height: number) => {
-    const { preview, colors } = this;
+  getColorsAt = async (startX: number, startY: number, width: number, height: number) => {
+    const { preview } = this;
+
+    const colors = await this.colors;
 
     const targetColors = [];
 
