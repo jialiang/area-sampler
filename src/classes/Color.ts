@@ -666,8 +666,8 @@ export default class Color {
       return Math.pow(luminance, 1 / 3) * 116 - 16;
     });
 
-    const lightnestValue = Math.max(...lightnessValues);
-    const darkestValue = Math.min(...lightnessValues);
+    const lightnestValue = lightnessValues.reduce((max, v) => Math.max(max, v), -1);
+    const darkestValue = lightnessValues.reduce((max, v) => Math.min(max, v), 256);
 
     const lightestIndex = lightnessValues.indexOf(lightnestValue);
     const darkestIndex = lightnessValues.indexOf(darkestValue);
