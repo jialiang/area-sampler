@@ -53,7 +53,11 @@ const html = async () => {
 
   const formContainerString = renderToStaticMarkup(formContainerComponent);
   const htmlString = await fs.readFile("./src/index.html", { encoding: "utf8" });
-  const hydratedHtmlString = htmlString.replace("<!-- FormContainer -->", formContainerString);
+  const cssString = await fs.readFile("./src/index.css", { encoding: "utf-8" });
+
+  const hydratedHtmlString = htmlString
+    .replace("<!-- FormContainer -->", formContainerString)
+    .replace("<!-- Style -->", `<style>${cssString}</style>`);
 
   await fs.writeFile("./docs/index.html", hydratedHtmlString);
 };
