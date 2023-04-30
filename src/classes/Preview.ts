@@ -1,5 +1,5 @@
 import Color from "./Color.ts";
-import { clamp } from "./Util.ts";
+import { clamp, toast } from "./Util.ts";
 
 export default class Preview {
   readonly preview: HTMLCanvasElement;
@@ -8,6 +8,7 @@ export default class Preview {
   private context: CanvasRenderingContext2D;
   private image: HTMLImageElement;
   private colors: Color[];
+  private loadingToast: (() => void) | undefined;
 
   private opacity: number | undefined;
   private backgroundColor: Color | undefined;
@@ -32,25 +33,36 @@ export default class Preview {
   handleReadUpload = () => {
     const { uploader, image } = this;
 
-    const fileReader = new FileReader();
+    this.loadingToast = toast("Loading selected image...", true);
 
-    fileReader.addEventListener("load", (e) => {
-      if (!e.target || !e.target.result) throw "Failed to read uploaded file.";
+    requestAnimationFrame(() => {
+      const fileReader = new FileReader();
 
-      image.src = e.target.result.toString();
+      fileReader.addEventListener("load", (e) => {
+        if (!e.target || !e.target.result) throw "Failed to read uploaded file.";
+
+        image.src = e.target.result.toString();
+      });
+
+      if (!uploader.files) throw "Asked to read image file but found no file was uploaded.";
+
+      fileReader.readAsDataURL(uploader.files[0]);
     });
-
-    if (!uploader.files) throw "Asked to read image file but found no file was uploaded.";
-
-    fileReader.readAsDataURL(uploader.files[0]);
   };
 
   handleUpdateImage = () => {
-    const { preview, context, image, opacity, backgroundColor } = this;
+    const { preview, context, image, loadingToast, opacity, backgroundColor } = this;
     let { width, height } = image;
 
     if (!width) width = 300;
     if (!height) height = 200;
+
+    const done = () => {
+      if (loadingToast) {
+        loadingToast();
+        delete this.loadingToast;
+      }
+    };
 
     const imageDataToColorArray = (imageData: Uint8ClampedArray) => {
       const colors = [];
@@ -78,6 +90,7 @@ export default class Preview {
 
     if (opacity == null && backgroundColor == null) {
       this.colors = imageDataToColorArray(values);
+      done();
       return true;
     }
 
@@ -95,6 +108,7 @@ export default class Preview {
 
       if (!backgroundColor) {
         this.colors = imageDataToColorArray(values);
+        done();
         return true;
       }
     }
@@ -114,11 +128,16 @@ export default class Preview {
       context.drawImage(offscreenCanvas, 0, 0);
 
       this.colors = imageDataToColorArray(context.getImageData(0, 0, width, height).data);
+      done();
     }
   };
 
   loadExampleImage = () => {
-    this.image.src = "./example.png";
+    this.loadingToast = toast("Loading example image...", true);
+
+    requestAnimationFrame(() => {
+      this.image.src = "./example.png";
+    });
   };
 
   getColorsAt = (startX: number, startY: number, width: number, height: number) => {

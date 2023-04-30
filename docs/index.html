@@ -262,13 +262,16 @@ button:active {
 .toast {
   display: inline-block;
   padding: 0.5rem 1rem;
-  transform: translateY(100%);
-  animation: 1.5s fade-out forwards;
   pointer-events: initial;
   color: white;
   border-radius: 1rem;
   background: #636363;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.fade-out {
+  transform: translateY(100%);
+  animation: 1.5s fade-out forwards;
 }
 
 @keyframes fade-out {

@@ -13,11 +13,11 @@ export const round = (value: number, decimalPlaces = 0) =>
 export const clamp = (value: number, min: number, max: number) =>
   Math.max(Math.min(value, max), min);
 
-export const toast = (message: string) => {
+export const toast = (message: string, persist = false) => {
   const toast = document.createElement("div");
 
   toast.textContent = message;
-  toast.className = "toast";
+  toast.className = `toast ${persist ? "" : "fade-out"}`;
   toast.setAttribute("role", "status");
 
   const toastContainer = document.querySelector(".toast-container");
@@ -25,8 +25,14 @@ export const toast = (message: string) => {
   if (toastContainer) {
     toastContainer.appendChild(toast);
 
-    setTimeout(() => {
-      toastContainer.removeChild(toast);
-    }, 1500);
+    if (persist) {
+      return () => {
+        requestAnimationFrame(() => toastContainer.removeChild(toast));
+      };
+    } else {
+      setTimeout(() => {
+        toastContainer.removeChild(toast);
+      }, 1500);
+    }
   }
 };
