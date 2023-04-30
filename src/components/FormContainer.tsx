@@ -38,16 +38,16 @@ function Select({ name }: { name: keyof typeof options }) {
 }
 
 function Field({
-  dataSuffix,
+  suffix,
   label,
   children,
 }: {
-  dataSuffix?: string;
+  suffix?: string;
   label: string;
   children: React.ReactNode;
 }) {
   return (
-    <label className="field" data-suffix={dataSuffix}>
+    <label className="field" data-suffix={suffix}>
       <div className="top-row">{label}</div>
       {children}
     </label>
@@ -82,7 +82,7 @@ function FormContainer() {
           <fieldset>
             <legend>Image Options</legend>
 
-            <Field label="Image Opacity">
+            <Field label="Image Opacity" suffix="%">
               <input type="number" name="opacityPercentage" min="0" max="1000" defaultValue="100" />
             </Field>
 

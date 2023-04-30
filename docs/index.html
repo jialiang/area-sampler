@@ -22,18 +22,34 @@ body {
   height: 100%;
   margin: 0;
   text-align: center;
+  color: #202122;
 }
 
 h1 {
-  margin: 0 0 2rem;
+  margin: 0 0 1rem;
 }
 
-p {
+a {
+  text-decoration: none;
+  color: #36c;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+summary {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+li {
+  margin-bottom: 0.67rem;
+}
+
+.text-container {
+  line-height: 1.6;
   max-width: 40rem;
-}
-
-.intro-container {
-  line-height: 1.33;
   padding: 1rem;
   text-align: left;
 }
@@ -118,10 +134,10 @@ select {
   font-size: 1rem;
   line-height: 1;
   box-sizing: border-box;
-  width: 7.5rem;
+  width: 10rem;
+  min-height: 2rem;
   margin: 0;
   padding: 0.35rem;
-  vertical-align: middle;
   border: 1px solid #ccc;
   border-radius: 4px;
   background: white;
@@ -293,7 +309,7 @@ button:active {
 </style>
   </head>
   <body>
-    <div class="intro-container">
+    <div class="text-container">
       <h1>Area Sampler</h1>
 
       <p>
@@ -303,7 +319,7 @@ button:active {
       </p>
     </div>
 
-    <div class="form-container"><form class="options"><div class="field-container"><fieldset><legend>Image Options</legend><label class="field"><div class="top-row">Image Opacity</div><input type="number" name="opacityPercentage" min="0" max="1000" value="100"/></label><label class="field"><div class="top-row">Enable Background Color</div><select name="transparencyType"><option value="straight">No</option><option value="premultiplied">Yes</option></select></label><label class="field"><div class="top-row">Background Color</div><input type="color" name="backgroundColor" value="#ffffff"/></label></fieldset><fieldset><legend>Result Options</legend><label class="field"><div class="top-row">Result Format</div><select name="resultFormat"><option value="rgb">RGB</option><option value="hex">Hexadecimal</option><option value="hsl">HSL</option><option value="svg">SVG Color Name</option></select></label><label class="field"><div class="top-row">Hide Alpha Channel</div><select name="hideAlphaChannel"><option value="opaqueOnly">If opaque</option><option value="never">Never</option><option value="always">Always</option></select></label><label class="field"><div class="top-row">Averaging Method</div><select name="averagingMethod"><option value="squared">Squared</option><option value="simple">Simple</option></select></label></fieldset><fieldset><legend>Image File</legend><label class="field"><div class="top-row">Upload Image</div><input type="file" name="imageUpload" accept="image/*"/></label><button id="example-image-button" type="button">Use Example Image</button></fieldset></div><button name="save" type="button">Save Options</button><button type="reset">Reset All Options</button></form><form class="results"><div class="field-container"><fieldset><legend>Averages</legend><div class="field"><div class="top-row"><label for="mean">Mean</label><span><span class="color-preview"><div class="background"></div><div class="foreground"></div></span> <button class="copy">Copy</button></span></div><input id="mean" name="meanResultText" readonly=""/></div><div class="field"><div class="top-row"><label for="median">Median</label><span><span class="color-preview"><div class="background"></div><div class="foreground"></div></span> <button class="copy">Copy</button></span></div><input id="median" name="medianResultText" readonly=""/></div></fieldset><fieldset><legend>Min and Max</legend><div class="field"><div class="top-row"><label for="lightest">Lightest</label><span><span class="color-preview"><div class="background"></div><div class="foreground"></div></span> <button class="copy">Copy</button></span></div><input id="lightest" name="lightestResultText" readonly=""/></div><div class="field"><div class="top-row"><label for="darkest">Darkest</label><span><span class="color-preview"><div class="background"></div><div class="foreground"></div></span> <button class="copy">Copy</button></span></div><input id="darkest" name="darkestResultText" readonly=""/></div></fieldset></div></form></div>
+    <div class="form-container"><form class="options"><div class="field-container"><fieldset><legend>Image Options</legend><label class="field" data-suffix="%"><div class="top-row">Image Opacity</div><input type="number" name="opacityPercentage" min="0" max="1000" value="100"/></label><label class="field"><div class="top-row">Enable Background Color</div><select name="transparencyType"><option value="straight">No</option><option value="premultiplied">Yes</option></select></label><label class="field"><div class="top-row">Background Color</div><input type="color" name="backgroundColor" value="#ffffff"/></label></fieldset><fieldset><legend>Result Options</legend><label class="field"><div class="top-row">Result Format</div><select name="resultFormat"><option value="rgb">RGB</option><option value="hex">Hexadecimal</option><option value="hsl">HSL</option><option value="svg">SVG Color Name</option></select></label><label class="field"><div class="top-row">Hide Alpha Channel</div><select name="hideAlphaChannel"><option value="opaqueOnly">If opaque</option><option value="never">Never</option><option value="always">Always</option></select></label><label class="field"><div class="top-row">Averaging Method</div><select name="averagingMethod"><option value="squared">Squared</option><option value="simple">Simple</option></select></label></fieldset><fieldset><legend>Image File</legend><label class="field"><div class="top-row">Upload Image</div><input type="file" name="imageUpload" accept="image/*"/></label><button id="example-image-button" type="button">Use Example Image</button></fieldset></div><button name="save" type="button">Save Options</button><button type="reset">Reset All Options</button></form><form class="results"><div class="field-container"><fieldset><legend>Averages</legend><div class="field"><div class="top-row"><label for="mean">Mean</label><span><span class="color-preview"><div class="background"></div><div class="foreground"></div></span> <button class="copy">Copy</button></span></div><input id="mean" name="meanResultText" readonly=""/></div><div class="field"><div class="top-row"><label for="median">Median</label><span><span class="color-preview"><div class="background"></div><div class="foreground"></div></span> <button class="copy">Copy</button></span></div><input id="median" name="medianResultText" readonly=""/></div></fieldset><fieldset><legend>Min and Max</legend><div class="field"><div class="top-row"><label for="lightest">Lightest</label><span><span class="color-preview"><div class="background"></div><div class="foreground"></div></span> <button class="copy">Copy</button></span></div><input id="lightest" name="lightestResultText" readonly=""/></div><div class="field"><div class="top-row"><label for="darkest">Darkest</label><span><span class="color-preview"><div class="background"></div><div class="foreground"></div></span> <button class="copy">Copy</button></span></div><input id="darkest" name="darkestResultText" readonly=""/></div></fieldset></div></form></div>
 
     <p class="hint">
       For touch: Use&nbsp;1&nbsp;finger&nbsp;to&nbsp;scroll, 2&nbsp;fingers&nbsp;to&nbsp;select.
@@ -312,6 +328,55 @@ button:active {
     <div class="canvas-container">
       <canvas class="preview" width="300" height="200"></canvas>
       <div class="selector"></div>
+    </div>
+
+    <div class="text-container">
+      <details>
+        <summary>Implementation Notes</summary>
+        <ul>
+          <li>
+            The image opacity option is applied as a percentage of the image's original opacity.
+          </li>
+          <li>
+            Nearest SVG color is the one with the smallest
+            <a
+              href="http://www.brucelindbloom.com/index.html?Eqn_DeltaE_CIE94.html"
+              target="_blank"
+              rel="noreferrer noopener">
+              Delta E (CIE 1994)
+            </a>
+            value when compared to the target color.
+            <a
+              href="https://en.wikipedia.org/wiki/Color_difference#CIELAB_%CE%94E*"
+              target="_blank"
+              rel="noreferrer noopener">
+              Wikipedia article on Delta E</a
+            >.
+          </li>
+          <li>
+            Read
+            <a
+              href="https://sighack.com/post/averaging-rgb-colors-the-right-way"
+              target="_blank"
+              rel="noreferrer noopener">
+              Averaging RGB Colors the Right Way
+            </a>
+            for more details on the difference between squared and simple color averaging method.
+          </li>
+          <li>Median values are calculated on a per-channel basis.</li>
+          <li>
+            Lightest and darkest colors are determined by the largest and smallest L* (perceptual
+            lightness) value of the colors in
+            <a
+              href="https://en.wikipedia.org/wiki/CIELAB_color_space"
+              target="_blank"
+              rel="noreferrer noopener">
+              CIELAB color space
+            </a>
+            respectively.
+          </li>
+        </ul>
+      </details>
     </div>
 
     <div class="toast-container"></div>
