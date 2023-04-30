@@ -97,6 +97,8 @@ function init() {
   options.onBeforeChange("backgroundColor", handleBackgroundSettingsChanged);
   options.onBeforeChange("transparencyType", handleBackgroundSettingsChanged);
 
+  options.triggerAllBeforeChangeCallbacks();
+
   selection.onSelectionEnd = calculate;
   options.onChange = calculate;
 }
