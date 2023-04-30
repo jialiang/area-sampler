@@ -1,4 +1,4 @@
-import { rgb2lab, deltaE as getDeltaE } from "rgb-lab";
+import Colour from "./IsThisColourSimilar/Colour.ts";
 
 import Options from "./Options.ts";
 import { round } from "./Util.ts";
@@ -733,13 +733,14 @@ export default class Color {
   getClosedNamedColor = () => {
     const { r, g, b } = this;
 
-    const lab = rgb2lab([r, g, b]);
+    const labA = Colour.rgb2lab(r, g, b);
 
     let smallestDeltaE = 101;
     let closestColorName = "";
 
     Color.namedColorsLab.forEach((namedColor) => {
-      const deltaE = getDeltaE(lab, namedColor.value);
+      const labB = namedColor.value;
+      const deltaE = Colour.deltaE00(labA[0], labA[1], labA[2], labB[0], labB[1], labB[2]);
 
       if (deltaE < smallestDeltaE) {
         smallestDeltaE = deltaE;
