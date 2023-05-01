@@ -8,6 +8,7 @@ export default class Preview {
   private context: CanvasRenderingContext2D;
   private image: HTMLImageElement;
   private colors: Promise<{ r: number; g: number; b: number; a: number }[]> | [];
+
   private loadingToast: (() => void) | undefined;
 
   private opacity: number | undefined;
@@ -50,35 +51,32 @@ export default class Preview {
     });
   };
 
-  _handleUpdateImage = () => {
+  _handleUpdateImage = debounce((resolve) => {
     const { preview, context, image, loadingToast, opacity, backgroundColor } = this;
     let { width, height } = image;
 
-    if (!width) width = 300;
-    if (!height) height = 200;
+    width = width || 300;
+    height = height || 200;
 
     const done = (imageData: Uint8ClampedArray) => {
-      if (loadingToast) {
-        loadingToast();
-        delete this.loadingToast;
-      }
+      if (loadingToast) loadingToast();
 
-      this.colors = new Promise((resolve) => {
+      delete this.loadingToast;
+
+      requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            const colors = [];
+          const colors = [];
 
-            for (let i = 0; i < imageData.length; i += 4) {
-              const r = imageData[i + 0];
-              const g = imageData[i + 1];
-              const b = imageData[i + 2];
-              const a = imageData[i + 3];
+          for (let i = 0; i < imageData.length; i += 4) {
+            const r = imageData[i + 0];
+            const g = imageData[i + 1];
+            const b = imageData[i + 2];
+            const a = imageData[i + 3];
 
-              colors.push({ r, g, b, a });
-            }
+            colors.push({ r, g, b, a });
+          }
 
-            resolve(colors);
-          });
+          resolve(colors);
         });
       });
     };
@@ -92,10 +90,7 @@ export default class Preview {
     const imageData = context.getImageData(0, 0, width, height);
     const values = imageData.data;
 
-    if (opacity == null && backgroundColor == null) {
-      done(values);
-      return true;
-    }
+    if (opacity == null && backgroundColor == null) return done(values);
 
     // Handle Opacity
 
@@ -109,10 +104,7 @@ export default class Preview {
 
       context.putImageData(imageData, 0, 0);
 
-      if (!backgroundColor) {
-        done(values);
-        return true;
-      }
+      if (!backgroundColor) return done(values);
     }
 
     // Handle Background Color
@@ -129,11 +121,15 @@ export default class Preview {
 
       context.drawImage(offscreenCanvas, 0, 0);
 
-      done(context.getImageData(0, 0, width, height).data);
+      return done(context.getImageData(0, 0, width, height).data);
     }
-  };
+  });
 
-  handleUpdateImage = debounce(this._handleUpdateImage);
+  handleUpdateImage = () => {
+    this.colors = new Promise((resolve) => {
+      this._handleUpdateImage(resolve);
+    });
+  };
 
   loadExampleImage = () => {
     this.loadingToast = toast("Loading example image...", true);
@@ -146,7 +142,13 @@ export default class Preview {
   getColorsAt = async (startX: number, startY: number, width: number, height: number) => {
     const { preview } = this;
 
-    const colors = await this.colors;
+    let colors;
+    let resolvedColors = [] as { r: number; g: number; b: number; a: number }[];
+
+    while (colors !== this.colors) {
+      colors = this.colors;
+      resolvedColors = await colors;
+    }
 
     const targetColors = [];
 
@@ -154,9 +156,9 @@ export default class Preview {
       for (let x = startX; x < startX + width; x++) {
         const i = y * preview.width + x;
 
-        if (i < 0 || i > colors.length) continue;
+        if (i < 0 || i > resolvedColors.length) continue;
 
-        targetColors.push(colors[i]);
+        targetColors.push(resolvedColors[i]);
       }
     }
 
