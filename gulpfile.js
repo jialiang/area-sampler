@@ -10,37 +10,46 @@ const source = require("vinyl-source-stream");
 const buffer = require("vinyl-buffer");
 const sourcemaps = require("gulp-sourcemaps");
 const uglify = require("gulp-uglify");
+const watchify = require("watchify");
 
 const babel = require("@babel/core");
 const requireFromString = require("require-from-string");
 const { renderToStaticMarkup } = require("react-dom/server");
 const fs = require("fs/promises");
 
-const clean = () => del("docs/**", { force: true });
-
-const js = () =>
-  browserify({
+const js = () => {
+  const b = browserify({
     basedir: ".",
     debug: true,
     entries: ["./src/index.ts"],
     cache: {},
     packageCache: {},
-  })
-    .transform(babelify, {
-      presets: [["@babel/preset-env", { targets: "defaults" }], "@babel/preset-typescript"],
-      extensions: [".ts"],
-    })
-    .bundle()
-    .on("error", function (err) {
-      fancyLog(err.message);
-      this.emit("end");
-    })
-    .pipe(source("bundle.js"))
-    .pipe(buffer())
-    .pipe(sourcemaps.init({ loadMaps: true }))
-    .pipe(uglify())
-    .pipe(sourcemaps.write("./"))
-    .pipe(dest("docs"));
+    plugin: [watchify],
+  }).transform(babelify, {
+    presets: [["@babel/preset-env", { targets: "defaults" }], "@babel/preset-typescript"],
+    extensions: [".ts"],
+  });
+
+  const bundle = () =>
+    b
+      .bundle()
+      .on("error", function (err) {
+        fancyLog(err.message);
+        this.emit("end");
+      })
+      .pipe(source("bundle.js"))
+      .pipe(buffer())
+      .pipe(sourcemaps.init({ loadMaps: true }))
+      .pipe(uglify())
+      .pipe(sourcemaps.write("./"))
+      .pipe(dest("docs"));
+
+  const cleanJs = () => del("./docs/**/*.(js,map)");
+
+  b.on("update", series(cleanJs, bundle));
+
+  bundle();
+};
 
 const html = async () => {
   const transformed = await babel.transformFileAsync("./src/components/FormContainer.tsx", {
@@ -62,6 +71,10 @@ const html = async () => {
 
 const image = () => src("./src/**/*.png").pipe(dest("docs"));
 
-task("default", () =>
-  watch("./src/**/*", { ignoreInitial: false }, series(clean, parallel(js, html, image)))
-);
+const notJs = () => {
+  const cleanNotJs = () => del("./docs/**/*.(html,png)");
+
+  watch("./src/**/*.!(ts)", series(cleanNotJs, parallel(html, image)));
+};
+
+task("default", parallel(js, notJs));
