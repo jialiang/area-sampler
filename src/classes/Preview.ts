@@ -1,5 +1,5 @@
 import Color from "./Color.ts";
-import { clamp, debounce, toast } from "./Util.ts";
+import { debounce, toast } from "./Util.ts";
 
 export default class Preview {
   readonly preview: HTMLCanvasElement;
@@ -95,12 +95,7 @@ export default class Preview {
     // Handle Opacity
 
     if (opacity != null) {
-      for (let i = 0; i < values.length; i += 4) {
-        const alpha = values[i + 3] * opacity;
-        const clampedAlpha = clamp(alpha, 0, 255);
-
-        values[i + 3] = clampedAlpha;
-      }
+      for (let i = 0; i < values.length; i += 4) values[i + 3] *= opacity;
 
       context.putImageData(imageData, 0, 0);
 
