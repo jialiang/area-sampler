@@ -36,19 +36,9 @@ export default class Preview {
 
     this.loadingToast = toast("Loading selected image...", true);
 
-    requestAnimationFrame(() => {
-      const fileReader = new FileReader();
+    if (!uploader.files) throw "Asked to read image file but found no file was uploaded.";
 
-      fileReader.addEventListener("load", (e) => {
-        if (!e.target || !e.target.result) throw "Failed to read uploaded file.";
-
-        image.src = e.target.result.toString();
-      });
-
-      if (!uploader.files) throw "Asked to read image file but found no file was uploaded.";
-
-      fileReader.readAsDataURL(uploader.files[0]);
-    });
+    image.src = URL.createObjectURL(uploader.files[0]);
   };
 
   _handleUpdateImage = debounce((resolve) => {
@@ -129,9 +119,7 @@ export default class Preview {
   loadExampleImage = () => {
     this.loadingToast = toast("Loading example image...", true);
 
-    requestAnimationFrame(() => {
-      this.image.src = "./example.png";
-    });
+    this.image.src = "./example.png";
   };
 
   getColorsAt = async (startX: number, startY: number, width: number, height: number) => {
