@@ -1,13 +1,17 @@
 import Color from "./Color.ts";
-import { debounce, toast } from "./Util.ts";
+import { debounce, toast, isNil } from "./Util.ts";
 
 export default class Preview {
   readonly preview: HTMLCanvasElement;
   readonly uploader: HTMLInputElement;
 
+  private internalCanvas: OffscreenCanvas;
+  private internalContext: OffscreenCanvasRenderingContext2D;
+
   private context: CanvasRenderingContext2D;
   private image: HTMLImageElement;
-  private colors: Promise<{ r: number; g: number; b: number; a: number }[]> | [];
+  private imageValues: Uint8ClampedArray | undefined;
+  private colors: Promise<{ r: number; g: number; b: number; a: number }[]> | undefined;
 
   private loadingToast: (() => void) | undefined;
 
@@ -16,7 +20,11 @@ export default class Preview {
 
   constructor(previewElement: HTMLCanvasElement, uploaderElement: HTMLInputElement) {
     const image = new Image();
-    image.addEventListener("load", this.handleUpdateImage);
+
+    image.addEventListener("load", () => {
+      delete this.imageValues;
+      this.handleUpdateImage();
+    });
 
     uploaderElement.addEventListener("change", this.handleReadUpload);
 
@@ -28,7 +36,14 @@ export default class Preview {
 
     this.context = context;
     this.image = image;
-    this.colors = [];
+
+    const internalCanvas = new OffscreenCanvas(0, 0);
+    const internalContext = internalCanvas.getContext("2d");
+
+    if (!internalContext) throw "Failed to get 2D context from offscreen canvas.";
+
+    this.internalCanvas = internalCanvas;
+    this.internalContext = internalContext;
   }
 
   handleReadUpload = () => {
@@ -42,26 +57,34 @@ export default class Preview {
   };
 
   _handleUpdateImage = debounce((resolve) => {
-    const { preview, context, image, loadingToast, opacity, backgroundColor } = this;
+    const { preview, context, internalCanvas, internalContext, image } = this;
+    const { opacity, backgroundColor } = this;
+
     let { width, height } = image;
 
     width = width || 300;
     height = height || 200;
 
-    const done = (imageData: Uint8ClampedArray) => {
+    width = preview.width = internalCanvas.width = width || 300;
+    height = preview.height = internalCanvas.height = height || 200;
+
+    const done = (imageData?: Uint8ClampedArray) => {
+      const { loadingToast } = this;
+
       if (loadingToast) loadingToast();
 
       delete this.loadingToast;
 
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
+          const _imageData = imageData || context.getImageData(0, 0, width, height).data;
           const colors = [];
 
-          for (let i = 0; i < imageData.length; i += 4) {
-            const r = imageData[i + 0];
-            const g = imageData[i + 1];
-            const b = imageData[i + 2];
-            const a = imageData[i + 3];
+          for (let i = 0; i < _imageData.length; i += 4) {
+            const r = _imageData[i + 0];
+            const g = _imageData[i + 1];
+            const b = _imageData[i + 2];
+            const a = _imageData[i + 3];
 
             colors.push({ r, g, b, a });
           }
@@ -71,42 +94,40 @@ export default class Preview {
       });
     };
 
-    preview.width = width;
-    preview.height = height;
-
     context.clearRect(0, 0, width, height);
-    context.drawImage(image, 0, 0);
 
-    const imageData = context.getImageData(0, 0, width, height);
-    const values = imageData.data;
-
-    if (opacity == null && backgroundColor == null) return done(values);
-
-    // Handle Opacity
-
-    if (opacity != null) {
-      for (let i = 0; i < values.length; i += 4) values[i + 3] *= opacity;
-
-      context.putImageData(imageData, 0, 0);
-
-      if (!backgroundColor) return done(values);
+    if (!this.imageValues || (isNil(opacity) && isNil(backgroundColor))) {
+      context.drawImage(image, 0, 0);
     }
 
-    // Handle Background Color
+    if (!this.imageValues) this.imageValues = context.getImageData(0, 0, width, height).data;
 
-    if (backgroundColor != null) {
-      const offscreenCanvas = new OffscreenCanvas(width, height);
-      const offscreenContext = offscreenCanvas.getContext("2d");
+    if (isNil(opacity) && isNil(backgroundColor)) return done(this.imageValues);
 
-      if (!offscreenContext) throw "Failed to get 2D context of offscreen canvas.";
+    const _imageValues = new Uint8ClampedArray(this.imageValues);
 
-      offscreenContext.fillStyle = backgroundColor.toRgba();
-      offscreenContext.fillRect(0, 0, width, height);
-      offscreenContext.drawImage(preview, 0, 0);
+    if (!isNil(opacity)) {
+      for (let i = 0; i < _imageValues.length; i += 4) _imageValues[i + 3] *= opacity;
 
-      context.drawImage(offscreenCanvas, 0, 0);
+      if (isNil(backgroundColor)) {
+        context.putImageData(new ImageData(_imageValues, width), 0, 0);
+        return done(_imageValues);
+      }
+    }
 
-      return done(context.getImageData(0, 0, width, height).data);
+    if (!isNil(backgroundColor)) {
+      context.fillStyle = (backgroundColor as Color).toRgba();
+      context.fillRect(0, 0, width, height);
+
+      if (isNil(opacity)) {
+        context.drawImage(image, 0, 0);
+        return done();
+      }
+
+      internalContext.clearRect(0, 0, width, height);
+      internalContext.putImageData(new ImageData(_imageValues, width), 0, 0);
+      context.drawImage(internalCanvas, 0, 0);
+      return done();
     }
   });
 
@@ -124,6 +145,8 @@ export default class Preview {
 
   getColorsAt = async (startX: number, startY: number, width: number, height: number) => {
     const { preview } = this;
+
+    if (!this.colors) return [];
 
     let colors;
     let resolvedColors = [] as { r: number; g: number; b: number; a: number }[];
