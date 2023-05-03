@@ -1,4 +1,4 @@
-export const debounce = (func: (...args: any[]) => any, timeout = 100) => {
+export const debounce = (func: (...args: any[]) => any, timeout = 16) => {
   let timer: number;
 
   return (...args: any[]) => {
@@ -36,3 +36,5 @@ export const toast = (message: string, persist = false) => {
     }
   }
 };
+
+export const isNil = <T>(value: any): value is T => value == null;
