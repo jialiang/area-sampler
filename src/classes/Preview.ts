@@ -11,7 +11,7 @@ export default class Preview {
   private context: CanvasRenderingContext2D;
   private image: HTMLImageElement;
   private imageValues: Uint8ClampedArray | undefined;
-  private colors: Promise<{ r: number; g: number; b: number; a: number }[]> | undefined;
+  private colors: Promise<Uint8ClampedArray> | undefined;
 
   private loadingToast: (() => void) | undefined;
 
@@ -68,30 +68,14 @@ export default class Preview {
     width = preview.width = internalCanvas.width = width || 300;
     height = preview.height = internalCanvas.height = height || 200;
 
-    const done = (imageData?: Uint8ClampedArray) => {
+    const done = (colors?: Uint8ClampedArray) => {
       const { loadingToast } = this;
 
       if (loadingToast) loadingToast();
 
       delete this.loadingToast;
 
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          const _imageData = imageData || context.getImageData(0, 0, width, height).data;
-          const colors = [];
-
-          for (let i = 0; i < _imageData.length; i += 4) {
-            const r = _imageData[i + 0];
-            const g = _imageData[i + 1];
-            const b = _imageData[i + 2];
-            const a = _imageData[i + 3];
-
-            colors.push({ r, g, b, a });
-          }
-
-          resolve(colors);
-        });
-      });
+      resolve(colors || context.getImageData(0, 0, width, height).data);
     };
 
     context.clearRect(0, 0, width, height);
@@ -149,7 +133,7 @@ export default class Preview {
     if (!this.colors) return [];
 
     let colors;
-    let resolvedColors = [] as { r: number; g: number; b: number; a: number }[];
+    let resolvedColors = [] as Uint8ClampedArray | [];
 
     while (colors !== this.colors) {
       colors = this.colors;
@@ -160,11 +144,16 @@ export default class Preview {
 
     for (let y = startY; y < startY + height; y++) {
       for (let x = startX; x < startX + width; x++) {
-        const i = y * preview.width + x;
+        const i = (y * preview.width + x) * 4;
 
-        if (i < 0 || i > resolvedColors.length) continue;
+        if (i < 0 || i + 4 > resolvedColors.length) continue;
 
-        targetColors.push(resolvedColors[i]);
+        targetColors.push({
+          r: resolvedColors[i + 0],
+          g: resolvedColors[i + 1],
+          b: resolvedColors[i + 2],
+          a: resolvedColors[i + 3],
+        });
       }
     }
 
