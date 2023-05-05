@@ -3,6 +3,13 @@ import Colour from "./IsThisColourSimilar/Colour.ts";
 import Options from "./Options.ts";
 import { round } from "./Util.ts";
 
+export type SimpleColor = {
+  r: number;
+  g: number;
+  b: number;
+  a: number;
+};
+
 export default class Color {
   static squaredValues = [...Array(256).keys()].map((value) => value * value);
 
@@ -597,7 +604,7 @@ export default class Color {
     },
   ] as { name: string; value: [number, number, number] }[];
 
-  static getMeanMedian = (colors: Color[], options: Options) => {
+  static getMeanMedian = (colors: (Color | SimpleColor)[], options: Options) => {
     const averagingMethod = options.averagingMethod;
     const numberOfPixels = colors.length;
 
@@ -646,7 +653,9 @@ export default class Color {
     return [mean, median];
   };
 
-  static getLightestDarkest = (colors: Color[]) => {
+  static colorToLightness = {} as { [key: string]: number };
+
+  static getLightestDarkest = (colors: (Color | SimpleColor)[]) => {
     if (colors.length === 0) return [new Color(), new Color()];
 
     const sRGBtoLinear = (channel: number) => {
@@ -655,7 +664,7 @@ export default class Color {
       return Math.pow((channel + 0.055) / 1.055, 2.4);
     };
 
-    const lightnessValues = colors.map((color) => {
+    const getLightness = (color: Color | SimpleColor) => {
       const lR = sRGBtoLinear(color.r / 255);
       const lG = sRGBtoLinear(color.g / 255);
       const lB = sRGBtoLinear(color.b / 255);
@@ -664,16 +673,31 @@ export default class Color {
 
       if (luminance <= 216 / 24389) return luminance * (24389 / 27);
       return Math.pow(luminance, 1 / 3) * 116 - 16;
+    };
+
+    let lightestValue = 101;
+    let darkestValue = -1;
+
+    let lightestColor = colors[0];
+    let darkestColor = colors[0];
+
+    colors.forEach((color) => {
+      const colorId = `${color.r}-${color.g}-${color.b}`;
+
+      let lightness = Color.colorToLightness[colorId];
+
+      if (!lightness) Color.colorToLightness[colorId] = lightness = getLightness(color);
+
+      if (lightness < lightestValue) {
+        lightestValue = lightness;
+        lightestColor = color;
+      }
+
+      if (lightness > darkestValue) {
+        darkestValue = lightness;
+        darkestColor = color;
+      }
     });
-
-    const lightnestValue = lightnessValues.reduce((max, v) => Math.max(max, v), -1);
-    const darkestValue = lightnessValues.reduce((max, v) => Math.min(max, v), 256);
-
-    const lightestIndex = lightnessValues.indexOf(lightnestValue);
-    const darkestIndex = lightnessValues.indexOf(darkestValue);
-
-    const lightestColor = colors[lightestIndex];
-    const darkestColor = colors[darkestIndex];
 
     return [
       new Color(lightestColor.r, lightestColor.g, lightestColor.b, lightestColor.a),

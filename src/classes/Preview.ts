@@ -1,4 +1,4 @@
-import Color from "./Color.ts";
+import Color, { SimpleColor } from "./Color.ts";
 import { debounce, toast, isNil } from "./Util.ts";
 
 export default class Preview {
@@ -176,7 +176,7 @@ export default class Preview {
       resolvedColors = await colors;
     }
 
-    const targetColors = [];
+    const targetColors = [] as SimpleColor[];
 
     for (let y = startY; y < startY + height; y++) {
       for (let x = startX; x < startX + width; x++) {
