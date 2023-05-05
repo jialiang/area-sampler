@@ -36,7 +36,7 @@ function init() {
 
     const { top, left, width, height } = selection.info;
 
-    const selectedColors = (await preview.getColorsAt(left, top, width, height)) as Color[];
+    const selectedColors = (await preview.getColorsAt(left, top, width, height));
 
     const [meanColor, medianColor] = Color.getMeanMedian(selectedColors, options);
     const [lightestColor, darkestColor] = Color.getLightestDarkest(selectedColors);
