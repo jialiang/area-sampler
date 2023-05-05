@@ -9,7 +9,7 @@ export default class Preview {
   private internalContext: OffscreenCanvasRenderingContext2D;
 
   private context: CanvasRenderingContext2D;
-  private image: HTMLImageElement;
+  private imageBitmap: ImageBitmap | undefined;
   private imageValues: Uint8ClampedArray | undefined;
   private colors: Promise<Uint8ClampedArray> | undefined;
 
@@ -19,14 +19,14 @@ export default class Preview {
   private backgroundColor: Color | undefined;
 
   constructor(previewElement: HTMLCanvasElement, uploaderElement: HTMLInputElement) {
-    const image = new Image();
+    uploaderElement.addEventListener("change", () => {
+      const { uploader } = this;
 
-    image.addEventListener("load", () => {
-      delete this.imageValues;
-      this.handleUpdateImage();
+      if (!uploader.files) return;
+
+      this.loadingToast = toast("Loading selected image...", true);
+      this.handleReadUpload(uploader.files[0]);
     });
-
-    uploaderElement.addEventListener("change", this.handleReadUpload);
 
     this.preview = previewElement;
     this.uploader = uploaderElement;
@@ -35,7 +35,6 @@ export default class Preview {
     if (!context) throw "Failed to get 2D context from canvas element.";
 
     this.context = context;
-    this.image = image;
 
     const internalCanvas = new OffscreenCanvas(0, 0);
     const internalContext = internalCanvas.getContext("2d");
@@ -46,21 +45,31 @@ export default class Preview {
     this.internalContext = internalContext;
   }
 
-  handleReadUpload = () => {
-    const { uploader, image } = this;
+  handleReadUpload = (image: File | HTMLImageElement) => {
+    createImageBitmap(image)
+      .then((bitmap) => {
+        this.imageBitmap = bitmap;
+        delete this.imageValues;
+        this.handleUpdateImage();
+      })
+      .catch(() => {
+        const { loadingToast } = this;
 
-    this.loadingToast = toast("Loading selected image...", true);
+        if (loadingToast) loadingToast();
 
-    if (!uploader.files) throw "Asked to read image file but found no file was uploaded.";
+        delete this.loadingToast;
 
-    image.src = URL.createObjectURL(uploader.files[0]);
+        toast("Unable to load selected file");
+      });
   };
 
   _handleUpdateImage = debounce((resolve) => {
-    const { preview, context, internalCanvas, internalContext, image } = this;
+    const { preview, context, internalCanvas, internalContext, imageBitmap } = this;
     const { opacity, backgroundColor } = this;
 
-    let { width, height } = image;
+    if (!imageBitmap) return;
+
+    let { width, height } = imageBitmap;
 
     width = width || 300;
     height = height || 200;
@@ -81,7 +90,7 @@ export default class Preview {
     context.clearRect(0, 0, width, height);
 
     if (!this.imageValues || (isNil(opacity) && isNil(backgroundColor))) {
-      context.drawImage(image, 0, 0);
+      context.drawImage(imageBitmap, 0, 0);
     }
 
     if (!this.imageValues) this.imageValues = context.getImageData(0, 0, width, height).data;
@@ -104,7 +113,7 @@ export default class Preview {
       context.fillRect(0, 0, width, height);
 
       if (isNil(opacity)) {
-        context.drawImage(image, 0, 0);
+        context.drawImage(imageBitmap, 0, 0);
         return done();
       }
 
@@ -124,7 +133,13 @@ export default class Preview {
   loadExampleImage = () => {
     this.loadingToast = toast("Loading example image...", true);
 
-    this.image.src = "./example.png";
+    const image = new Image();
+
+    image.onload = () => {
+      this.handleReadUpload(image);
+    };
+
+    image.src = "./example.png";
   };
 
   getColorsAt = async (startX: number, startY: number, width: number, height: number) => {
