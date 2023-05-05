@@ -45,7 +45,7 @@ function init() {
     results.setResult("median", medianColor, options);
     results.setResult("lightest", lightestColor, options);
     results.setResult("darkest", darkestColor, options);
-  });
+  }, 100);
 
   uploaderElement.addEventListener("change", selection.clear);
 
