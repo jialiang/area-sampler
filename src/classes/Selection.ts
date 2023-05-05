@@ -20,14 +20,14 @@ export default class Selection {
     | undefined;
 
   constructor(borderElement: HTMLElement, targetElement: HTMLCanvasElement, callback?: () => void) {
-    targetElement.onmousedown = this.handleSelect;
-    targetElement.onmouseup = this.handleSelect;
-    targetElement.onmousemove = this.handleSelect;
-    targetElement.onmouseleave = this.handleSelect;
+    targetElement.addEventListener("mousedown", this.handleSelect, { passive: true });
+    targetElement.addEventListener("mouseup", this.handleSelect, { passive: true });
+    targetElement.addEventListener("mousemove", this.handleSelect, { passive: true });
+    targetElement.addEventListener("mouseleave", this.handleSelect, { passive: true });
 
-    targetElement.ontouchstart = this.handleTouch;
-    targetElement.ontouchend = this.handleTouch;
-    targetElement.ontouchmove = this.handleTouch;
+    targetElement.addEventListener("touchstart", this.handleTouch);
+    targetElement.addEventListener("touchend", this.handleTouch);
+    targetElement.addEventListener("touchmove", this.handleTouch);
 
     this.outline = borderElement;
     this.target = targetElement;
