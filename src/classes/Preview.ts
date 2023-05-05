@@ -5,8 +5,8 @@ export default class Preview {
   readonly preview: HTMLCanvasElement;
   readonly uploader: HTMLInputElement;
 
-  private internalCanvas: OffscreenCanvas;
-  private internalContext: OffscreenCanvasRenderingContext2D;
+  private internalCanvas: OffscreenCanvas | HTMLCanvasElement;
+  private internalContext: OffscreenCanvasRenderingContext2D | CanvasRenderingContext2D;
 
   private context: CanvasRenderingContext2D;
   private imageBitmap: ImageBitmap | undefined;
@@ -36,7 +36,11 @@ export default class Preview {
 
     this.context = context;
 
-    const internalCanvas = new OffscreenCanvas(0, 0);
+    const internalCanvas =
+      typeof OffscreenCanvas !== "undefined"
+        ? new OffscreenCanvas(0, 0)
+        : document.createElement("canvas");
+
     const internalContext = internalCanvas.getContext("2d");
 
     if (!internalContext) throw "Failed to get 2D context from offscreen canvas.";
