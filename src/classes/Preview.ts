@@ -67,16 +67,18 @@ export default class Preview {
     const { preview, context, internalCanvas, internalContext, imageBitmap } = this;
     const { opacity, backgroundColor } = this;
 
-    if (!imageBitmap) return;
+    let width = 300;
+    let height = 200;
 
-    let { width, height } = imageBitmap;
+    if (imageBitmap) {
+      width = imageBitmap.width;
+      height = imageBitmap.height;
+    }
 
-    width = width || 300;
-    height = height || 200;
+    preview.width = internalCanvas.width = width;
+    preview.height = internalCanvas.height = height;
 
-    width = preview.width = internalCanvas.width = width || 300;
-    height = preview.height = internalCanvas.height = height || 200;
-
+    // Always called before exit
     const done = (colors?: Uint8ClampedArray) => {
       const { loadingToast } = this;
 
@@ -89,6 +91,18 @@ export default class Preview {
 
     context.clearRect(0, 0, width, height);
 
+    // If no image, just set background color if any and return
+    if (!imageBitmap) {
+      if (backgroundColor) {
+        context.fillStyle = (backgroundColor as Color).toRgba();
+        context.fillRect(0, 0, width, height);
+      }
+
+      return done();
+    }
+
+    // If no imageValues, draw first so we can get imageValue from it
+    // If no processing, draw and done
     if (!this.imageValues || (isNil(opacity) && isNil(backgroundColor))) {
       context.drawImage(imageBitmap, 0, 0);
     }
@@ -97,8 +111,10 @@ export default class Preview {
 
     if (isNil(opacity) && isNil(backgroundColor)) return done(this.imageValues);
 
+    // Clone imageValue, don't want to manipulate the original
     const _imageValues = new Uint8ClampedArray(this.imageValues);
 
+    // Set opacity
     if (!isNil(opacity)) {
       for (let i = 0; i < _imageValues.length; i += 4) _imageValues[i + 3] *= opacity;
 
@@ -108,6 +124,7 @@ export default class Preview {
       }
     }
 
+    // Set background color
     if (!isNil(backgroundColor)) {
       context.fillStyle = (backgroundColor as Color).toRgba();
       context.fillRect(0, 0, width, height);
