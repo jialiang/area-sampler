@@ -36,7 +36,7 @@ function init() {
 
     const { top, left, width, height } = selection.info;
 
-    const selectedColors = (await preview.getColorsAt(left, top, width, height));
+    const selectedColors = await preview.getColorsAt(left, top, width, height);
 
     const [meanColor, medianColor] = Color.getMeanMedian(selectedColors, options);
     const [lightestColor, darkestColor] = Color.getLightestDarkest(selectedColors);
@@ -52,10 +52,12 @@ function init() {
   const exampleImageButton = $("#example-image-button")[0];
   const resetButton = $("button[type=reset]")[0];
   const saveButton = $("button[name=save")[0];
+  const downloadButton = $("button[name=download")[0];
 
   exampleImageButton.addEventListener("click", (e) => {
     e.preventDefault();
     selection.clear();
+    uploaderElement.value = "";
     preview.loadExampleImage();
   });
 
@@ -73,6 +75,27 @@ function init() {
     toast("Options saved!");
   });
 
+  downloadButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    const hideToast = toast("Preparing download...", true);
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const a = document.createElement("a");
+
+        a.href = previewElement.toDataURL("image/png", 1.0);
+        a.download = "example.png";
+
+        if (uploaderElement.files && uploaderElement.files.length) {
+          a.download = uploaderElement.files[0].name.split(".").slice(0, -1).join(".") + ".png";
+        }
+
+        if (hideToast) hideToast();
+        a.click();
+      });
+    });
+  });
+
   options.onBeforeChange("opacityPercentage", () => {
     const opacityPercent = options.opacityPercentage;
 
@@ -82,12 +105,11 @@ function init() {
   const handleBackgroundSettingsChanged = () => {
     const transparencyType = options.transparencyType;
 
-    let backgroundColor = null;
+    let backgroundColor = "";
 
-    if (transparencyType === "straight") backgroundColor = new Color(0, 0, 0, 0);
-    if (transparencyType === "premultiplied") backgroundColor = new Color(options.backgroundColor);
-
-    if (!backgroundColor) throw `Invalid transparency type option: ${transparencyType.toString()}`;
+    if (transparencyType === "premultiplied") {
+      backgroundColor = options.backgroundColor.toLowerCase().trim();
+    }
 
     preview.setBackgroundColor(backgroundColor);
     results.setBackgroundColor(backgroundColor);

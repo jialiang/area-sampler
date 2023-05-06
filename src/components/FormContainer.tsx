@@ -91,7 +91,7 @@ function FormContainer() {
             </Field>
 
             <Field label="Background Color">
-              <input type="color" name="backgroundColor" defaultValue="#ffffff" />
+              <input type="text" name="backgroundColor" defaultValue="white" />
             </Field>
           </fieldset>
 
@@ -128,6 +128,9 @@ function FormContainer() {
           Save Options
         </button>
         <button type="reset">Reset All Options</button>
+        <button name="download" type="button">
+          Download Image
+        </button>
       </form>
 
       <form className="results">

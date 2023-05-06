@@ -1,4 +1,4 @@
-import Color, { SimpleColor } from "./Color.ts";
+import { SimpleColor } from "./Color.ts";
 import { debounce, toast, isNil } from "./Util.ts";
 
 export default class Preview {
@@ -16,7 +16,7 @@ export default class Preview {
   private loadingToast: (() => void) | undefined;
 
   private opacity: number | undefined;
-  private backgroundColor: Color | undefined;
+  private backgroundColor: string | undefined;
 
   constructor(previewElement: HTMLCanvasElement, uploaderElement: HTMLInputElement) {
     uploaderElement.addEventListener("change", () => {
@@ -93,17 +93,18 @@ export default class Preview {
       resolve(colors || context.getImageData(0, 0, width, height).data);
     };
 
+    const setBackgroundColor = () => {
+      if (backgroundColor) {
+        context.fillStyle = "rgba(0, 0, 0, 0)";
+        context.fillStyle = backgroundColor;
+        context.fillRect(0, 0, width, height);
+      }
+    };
+
     context.clearRect(0, 0, width, height);
 
     // If no image, just set background color if any and return
-    if (!imageBitmap) {
-      if (backgroundColor) {
-        context.fillStyle = (backgroundColor as Color).toRgba();
-        context.fillRect(0, 0, width, height);
-      }
-
-      return done();
-    }
+    if (!imageBitmap) return setBackgroundColor(), done();
 
     // If no imageValues, draw first so we can get imageValue from it
     // If no processing, draw and done
@@ -130,8 +131,7 @@ export default class Preview {
 
     // Set background color
     if (!isNil(backgroundColor)) {
-      context.fillStyle = (backgroundColor as Color).toRgba();
-      context.fillRect(0, 0, width, height);
+      setBackgroundColor();
 
       if (isNil(opacity)) {
         context.drawImage(imageBitmap, 0, 0);
@@ -196,8 +196,8 @@ export default class Preview {
     return targetColors;
   };
 
-  setBackgroundColor = (color: Color) => {
-    if (color.a === 0) delete this.backgroundColor;
+  setBackgroundColor = (color: string) => {
+    if (!color) delete this.backgroundColor;
     else this.backgroundColor = color;
 
     this.handleUpdateImage();
