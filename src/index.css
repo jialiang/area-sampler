@@ -39,15 +39,17 @@ li {
 }
 
 .form-container {
+  overflow-x: auto;
   width: 100%;
+  margin-bottom: 1.5rem;
   text-align: left;
+  white-space: nowrap;
 }
 
 .options,
 .results {
   display: inline-block;
-  margin-bottom: 1.5rem;
-  padding: 1rem;
+  padding: 1rem 1rem 0;
   text-align: center;
   vertical-align: top;
 }
@@ -55,7 +57,6 @@ li {
 .field-container {
   display: flex;
   align-items: stretch;
-  flex-wrap: wrap;
   background: #fefefe;
 
   gap: 1.5rem;
@@ -127,6 +128,11 @@ select {
   background: white;
 }
 
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  opacity: 1;
+}
+
 input[type="file"] {
   width: 15rem;
 }
@@ -142,7 +148,7 @@ input[readonly] {
 
 .results input {
   font-family: monospace;
-  width: 16rem;
+  width: 17.5rem;
 }
 
 .color-preview {
@@ -182,7 +188,7 @@ button {
 }
 
 .field-container ~ button {
-  margin: 1.5rem 0.5rem 0;
+  margin: 1.5rem 0.5rem;
 }
 
 @media (hover: hover) {

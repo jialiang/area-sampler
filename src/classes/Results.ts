@@ -52,13 +52,11 @@ export default class Results {
     });
   }
 
-  setBackgroundColor = (color: Color) => {
+  setBackgroundColor = (color: string) => {
     const { resultElementArray } = this;
 
-    const backgroundColor = color.toRgba();
-
     resultElementArray.forEach((info) => {
-      info.backgroundElement.style.backgroundColor = backgroundColor;
+      info.backgroundElement.style.backgroundColor = color
     });
   };
 
