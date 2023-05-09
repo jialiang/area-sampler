@@ -1,6 +1,6 @@
-import Color from "./Color.ts";
-import Options from "./Options.ts";
-import { toast } from "./Util.ts";
+import Color from "./Color";
+import Options from "./Options";
+import { toast } from "./Util";
 
 type resultElementInfo = {
   textElement: HTMLInputElement;
@@ -56,7 +56,7 @@ export default class Results {
     const { resultElementArray } = this;
 
     resultElementArray.forEach((info) => {
-      info.backgroundElement.style.backgroundColor = color
+      info.backgroundElement.style.backgroundColor = color;
     });
   };
 

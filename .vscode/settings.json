@@ -1,6 +1,7 @@
 {
   "files.exclude": {
     "**/docs": true,
+    "**/compiled": true,
     "**/node_modules": true
   }
 }

@@ -1,9 +1,9 @@
-import Color from "./classes/Color.ts";
-import Options from "./classes/Options.ts";
-import Preview from "./classes/Preview.ts";
-import Selection from "./classes/Selection.ts";
-import Results from "./classes/Results.ts";
-import { debounce, toast } from "./classes/Util.ts";
+import Color from "./classes/Color";
+import Options from "./classes/Options";
+import Preview from "./classes/Preview";
+import Selection from "./classes/Selection";
+import Results from "./classes/Results";
+import { debounce, toast } from "./classes/Util";
 
 function init() {
   const $ = (selector: string): HTMLElement[] => Array.from(document.querySelectorAll(selector));
