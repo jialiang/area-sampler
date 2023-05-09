@@ -1,6 +1,14 @@
 {
   "presets": [
-    ["@babel/preset-env", { "targets": "defaults", "modules": "cjs" }],
+    [
+      "@babel/preset-env",
+      {
+        "targets": "defaults",
+        "modules": "cjs",
+        "useBuiltIns": "usage",
+        "corejs": 3
+      }
+    ],
     "@babel/preset-react",
     "@babel/preset-typescript"
   ],
