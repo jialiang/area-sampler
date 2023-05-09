@@ -1,5 +1,7 @@
 import React from "react";
 
+import Color from "../classes/Color";
+
 const options = {
   transparencyType: [
     { label: "No", value: "straight" },
@@ -91,7 +93,19 @@ export default function FormContainer() {
             </Field>
 
             <Field label="Background Color">
-              <input type="text" name="backgroundColor" defaultValue="white" />
+              <input type="text" name="backgroundColor" defaultValue="white" list="svgColorList" />
+              <datalist id="svgColorList">
+                <option value="rgb()">rgb()</option>
+                <option value="rgba()">rgba()</option>
+                <option value="#">#hex</option>
+                <option value="hsl()">hsl()</option>
+                <option value="hsla()">hsla()</option>
+                {Color.namedColorsLab.map((color) => (
+                  <option key={color.name} value={color.name}>
+                    {color.name}
+                  </option>
+                ))}
+              </datalist>
             </Field>
           </fieldset>
 
