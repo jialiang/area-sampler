@@ -1,7 +1,7 @@
-import Colour from "./IsThisColourSimilar/Colour.ts";
+import Colour from "./IsThisColourSimilar/Colour";
 
-import Options from "./Options.ts";
-import { round } from "./Util.ts";
+import Options from "./Options";
+import { round } from "./Util";
 
 export type SimpleColor = {
   r: number;

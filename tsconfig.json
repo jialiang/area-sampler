@@ -6,9 +6,8 @@
     "lib": ["ES6", "DOM"],
     "target": "ES6",
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "nodenext",
+    "moduleResolution": "node",
     "noEmit": true,
-    "allowImportingTsExtensions": true,
     "allowSyntheticDefaultImports": true,
     "jsx": "react"
   },

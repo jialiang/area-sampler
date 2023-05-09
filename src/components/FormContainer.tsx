@@ -74,7 +74,7 @@ function ResultField({ label, name }: { label: string; name?: string }) {
   );
 }
 
-function FormContainer() {
+export default function FormContainer() {
   return (
     <div className="form-container">
       <form className="options">
@@ -153,5 +153,3 @@ function FormContainer() {
     </div>
   );
 }
-
-export default <FormContainer />;

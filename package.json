@@ -16,7 +16,7 @@
     "@types/react": "^18.2.0",
     "@typescript-eslint/eslint-plugin": "^5.59.0",
     "@typescript-eslint/parser": "^5.59.0",
-    "babelify": "^10.0.0",
+    "babel-plugin-add-import-extension": "^1.6.0",
     "browserify": "^17.0.0",
     "concurrently": "^8.0.1",
     "del": "^6.1.1",
@@ -24,6 +24,7 @@
     "eslint-plugin-react": "^7.32.2",
     "fancy-log": "^2.0.0",
     "gulp": "^4.0.2",
+    "gulp-babel": "^8.0.0",
     "gulp-cli": "^2.3.0",
     "gulp-sourcemaps": "^3.0.0",
     "gulp-uglify": "^3.0.2",
@@ -31,13 +32,11 @@
     "postcss": "^8.4.23",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "require-from-string": "^2.0.2",
     "stylelint": "^15.6.0",
     "stylelint-config-standard-scss": "^9.0.0",
     "typescript": "^5.0.4",
     "vinyl-buffer": "^1.0.1",
-    "vinyl-source-stream": "^2.0.0",
-    "watchify": "^4.0.0"
+    "vinyl-source-stream": "^2.0.0"
   },
   "dependencies": {}
 }

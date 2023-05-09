@@ -1,5 +1,5 @@
-import { SimpleColor } from "./Color.ts";
-import { debounce, toast, isNil } from "./Util.ts";
+import { SimpleColor } from "./Color";
+import { debounce, toast, isNil } from "./Util";
 
 export default class Preview {
   readonly preview: HTMLCanvasElement;

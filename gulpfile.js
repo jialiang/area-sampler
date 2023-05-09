@@ -1,80 +1,69 @@
 "use strict";
 
-const { dest, src, task, series, parallel, watch } = require("gulp");
+const { dest, src, task, series, watch } = require("gulp");
 
 const del = require("del");
+const sourcemaps = require("gulp-sourcemaps");
+const babel = require("gulp-babel");
 const browserify = require("browserify");
-const babelify = require("babelify");
 const fancyLog = require("fancy-log");
 const source = require("vinyl-source-stream");
 const buffer = require("vinyl-buffer");
-const sourcemaps = require("gulp-sourcemaps");
 const uglify = require("gulp-uglify");
-const watchify = require("watchify");
-
-const babel = require("@babel/core");
-const requireFromString = require("require-from-string");
-const { renderToStaticMarkup } = require("react-dom/server");
 const fs = require("fs/promises");
 
-const js = () => {
-  const b = browserify({
+const { renderToStaticMarkup } = require("react-dom/server");
+const path = require("path");
+
+const clean = () => del(["./docs/**/*", "./compiled/**/*"]);
+
+const transform = () =>
+  src("src/**/*.{ts,tsx}")
+    .pipe(sourcemaps.init({ loadMaps: true }))
+    .pipe(babel())
+    .pipe(sourcemaps.write("./"))
+    .pipe(dest("./compiled"));
+
+const js = () =>
+  browserify({
     basedir: ".",
     debug: true,
-    entries: ["./src/index.ts"],
-    cache: {},
-    packageCache: {},
-    plugin: [watchify],
-  }).transform(babelify, {
-    presets: [["@babel/preset-env", { targets: "defaults" }], "@babel/preset-typescript"],
-    extensions: [".ts"],
-  });
-
-  const bundle = () =>
-    b
-      .bundle()
-      .on("error", function (err) {
-        fancyLog(err.message);
-        this.emit("end");
-      })
-      .pipe(source("bundle.js"))
-      .pipe(buffer())
-      .pipe(sourcemaps.init({ loadMaps: true }))
-      .pipe(uglify())
-      .pipe(sourcemaps.write("./"))
-      .pipe(dest("docs"));
-
-  const cleanJs = () => del("./docs/**/*.(js,map)");
-
-  b.on("update", series(cleanJs, bundle));
-
-  bundle();
-};
+    entries: ["./compiled/index.js"],
+  })
+    .bundle()
+    .on("error", function (error) {
+      fancyLog(error.message);
+      this.emit("end");
+    })
+    .pipe(source("bundle.js"))
+    .pipe(buffer())
+    .pipe(sourcemaps.init({ loadMaps: true }))
+    .pipe(uglify())
+    .pipe(sourcemaps.write("./"))
+    .pipe(dest("./docs"));
 
 const html = async () => {
-  const transformed = await babel.transformFileAsync("./src/components/FormContainer.tsx", {
-    presets: ["@babel/preset-env", "@babel/preset-typescript", "@babel/preset-react"],
+  const compiledFolderPath = path.resolve("./compiled");
+
+  Object.keys(require.cache).forEach((path) => {
+    if (path.includes(compiledFolderPath)) delete require.cache[path];
   });
 
-  const formContainerComponent = requireFromString(transformed.code).default;
+  const reactComponent = require(`./compiled/components/index.js`);
+  const reactString = renderToStaticMarkup(reactComponent.default);
 
-  const formContainerString = renderToStaticMarkup(formContainerComponent);
   const htmlString = await fs.readFile("./src/index.html", { encoding: "utf8" });
   const cssString = await fs.readFile("./src/index.css", { encoding: "utf-8" });
 
   const hydratedHtmlString = htmlString
-    .replace("<!-- FormContainer -->", formContainerString)
+    .replace("<!-- FormContainer -->", reactString)
     .replace("<!-- Style -->", `<style>${cssString}</style>`);
 
   await fs.writeFile("./docs/index.html", hydratedHtmlString);
 };
 
-const image = () => src("./src/**/*.png").pipe(dest("docs"));
+const image = () => src("./src/**/*.{jpg,png}").pipe(dest("docs"));
 
-const notJs = () => {
-  const cleanNotJs = () => del("./docs/**/*.(html,png)");
-
-  watch("./src/**/*.!(ts)", series(cleanNotJs, parallel(html, image)));
-};
-
-task("default", parallel(js, notJs));
+task("default", () =>
+  watch("./src/**/*", { ignoreInitial: false }, series(clean, transform, js, html, image))
+);

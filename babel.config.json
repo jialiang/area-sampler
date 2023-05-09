@@ -1,0 +1,8 @@
+{
+  "presets": [
+    ["@babel/preset-env", { "targets": "defaults", "modules": "cjs" }],
+    "@babel/preset-react",
+    "@babel/preset-typescript"
+  ],
+  "plugins": [["babel-plugin-add-import-extension", { "extension": "js", "replace": true }]]
+}
