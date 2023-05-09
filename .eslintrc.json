@@ -30,7 +30,7 @@
       "plugins": ["@typescript-eslint"],
       "settings": {
         "react": {
-          // "version": "detect"
+          "version": "detect"
         }
       },
       "rules": {
