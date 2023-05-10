@@ -6,7 +6,8 @@
   "author": "",
   "license": "ISC",
   "scripts": {
-    "dev": "concurrently --kill-others \"npx gulp\" \"npx http-server ./docs\"",
+    "build": "npx gulp",
+    "dev": "concurrently --kill-others \"npx gulp watch\" \"npx http-server ./dist\"",
     "lint": "npx tsc && npx eslint ./src/**/*.{ts,tsx} --fix"
   },
   "devDependencies": {
