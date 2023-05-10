@@ -15,7 +15,7 @@ const fs = require("fs/promises");
 const { renderToStaticMarkup } = require("react-dom/server");
 const path = require("path");
 
-const clean = () => del(["./docs/**/*", "./compiled/**/*"]);
+const clean = () => del(["./dist/**/*", "./compiled/**/*"]);
 
 const transform = () =>
   src("src/**/*.{ts,tsx}")
@@ -40,7 +40,7 @@ const js = () =>
     .pipe(sourcemaps.init({ loadMaps: true }))
     .pipe(uglify())
     .pipe(sourcemaps.write("./"))
-    .pipe(dest("./docs"));
+    .pipe(dest("./dist"));
 
 const html = async () => {
   const compiledFolderPath = path.resolve("./compiled");
@@ -59,11 +59,13 @@ const html = async () => {
     .replace("<!-- FormContainer -->", reactString)
     .replace("<!-- Style -->", `<style>${cssString}</style>`);
 
-  await fs.writeFile("./docs/index.html", hydratedHtmlString);
+  await fs.writeFile("./dist/index.html", hydratedHtmlString);
 };
 
-const image = () => src("./src/**/*.{jpg,png}").pipe(dest("docs"));
+const image = () => src("./src/**/*.{jpg,png}").pipe(dest("dist"));
 
-task("default", () =>
-  watch("./src/**/*", { ignoreInitial: false }, series(clean, transform, js, html, image))
-);
+const build = series(clean, transform, js, html, image);
+
+task("watch", () => watch("./src/**/*", { ignoreInitial: false }, build));
+
+task("default", build);
