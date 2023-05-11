@@ -1,7 +1,0 @@
-1. CHANGES MADE TO ORIGINAL FILE Colour.js
-
-- Changed extension to .ts.
-- Added TypeScript typings.
-- Removed class methods not used by parent project.
-- Removed checks for valid RGBA ranges from rgb2xyz method.
-- Renamed rgba2lab method to rgb2lab.
