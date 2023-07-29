@@ -28,6 +28,19 @@ export default class Preview {
       this.handleReadUpload(uploader.files[0]);
     });
 
+    previewElement.addEventListener("dragover", (e) => {
+      e.preventDefault();
+    });
+
+    previewElement.addEventListener("drop", (e) => {
+      e.preventDefault();
+
+      if (!e.dataTransfer) return;
+
+      this.loadingToast = toast("Loading selected image...", true);
+      this.handleReadUpload(e.dataTransfer.files[0]);
+    });
+
     this.preview = previewElement;
     this.uploader = uploaderElement;
 
