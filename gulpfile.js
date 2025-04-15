@@ -2,7 +2,7 @@
 
 const { dest, src, task, series, watch } = require("gulp");
 
-const del = require("del");
+const { deleteAsync } = require("del");
 const sourcemaps = require("gulp-sourcemaps");
 const babel = require("gulp-babel");
 const browserify = require("browserify");
@@ -15,7 +15,7 @@ const fs = require("fs/promises");
 const { renderToStaticMarkup } = require("react-dom/server");
 const path = require("path");
 
-const clean = () => del(["./dist/**/*", "./compiled/**/*"]);
+const clean = () => deleteAsync(["./dist/**/*", "./compiled/**/*"]);
 
 const transform = () =>
   src("src/**/*.{ts,tsx}")
