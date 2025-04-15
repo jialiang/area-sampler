@@ -69,7 +69,7 @@ export default class Preview {
         delete this.imageValues;
         this.handleUpdateImage();
       })
-      .catch(() => {
+      .catch((e) => {
         const { loadingToast } = this;
 
         if (loadingToast) loadingToast();
@@ -77,6 +77,7 @@ export default class Preview {
         delete this.loadingToast;
 
         toast("Unable to load selected file");
+        console.error(e, "\nAttempting to read the image:\n\n", image);
       });
   };
 
@@ -169,9 +170,13 @@ export default class Preview {
 
     const image = new Image();
 
-    image.onload = () => {
+    image.addEventListener("load", () => {
       this.handleReadUpload(image);
-    };
+    });
+
+    image.addEventListener("error", () => {
+      this.handleReadUpload(image);
+    });
 
     image.src = "./example.png";
   };
