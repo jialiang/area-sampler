@@ -73,11 +73,14 @@ export default class Options extends OptionsProxy {
   save = () => {
     const { fieldArray } = this;
 
-    const optionsString = fieldArray.reduce((optionsObject, field) => {
-      if (field.type !== "file") optionsObject[field.name] = field.value;
+    const optionsString = fieldArray.reduce(
+      (optionsObject, field) => {
+        if (field.type !== "file") optionsObject[field.name] = field.value;
 
-      return optionsObject;
-    }, {} as { [key: string]: string });
+        return optionsObject;
+      },
+      {} as { [key: string]: string },
+    );
 
     localStorage.setItem("options", JSON.stringify(optionsString));
   };
@@ -94,7 +97,7 @@ export default class Options extends OptionsProxy {
       fieldArray.forEach((field) => {
         if (optionsObject[field.name]) field.value = optionsObject[field.name];
       });
-    } catch (e) {
+    } catch {
       localStorage.removeItem("options");
     }
   };
