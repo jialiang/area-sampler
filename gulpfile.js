@@ -62,7 +62,7 @@ const html = async () => {
   await fs.writeFile("./dist/index.html", hydratedHtmlString);
 };
 
-const image = () => src("./src/**/*.{jpg,png}").pipe(dest("dist"));
+const image = () => src("./src/**/*.{jpg,png}", { encoding: false }).pipe(dest("dist"));
 
 const build = series(clean, transform, js, html, image);
 
