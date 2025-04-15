@@ -675,8 +675,8 @@ export default class Color {
       return Math.pow(luminance, 1 / 3) * 116 - 16;
     };
 
-    let lightestValue = 101;
-    let darkestValue = -1;
+    let lightestValue = -1;
+    let darkestValue = 101;
 
     let lightestColor = colors[0];
     let darkestColor = colors[0];
@@ -688,12 +688,12 @@ export default class Color {
 
       if (!lightness) Color.colorToLightness[colorId] = lightness = getLightness(color);
 
-      if (lightness < lightestValue) {
+      if (lightness > lightestValue) {
         lightestValue = lightness;
         lightestColor = color;
       }
 
-      if (lightness > darkestValue) {
+      if (lightness < darkestValue) {
         darkestValue = lightness;
         darkestColor = color;
       }
