@@ -176,7 +176,7 @@ export default class Colour {
       Math.pow(deltalp / (kl * sl), 2) +
         Math.pow(deltacp / (kc * sc), 2) +
         Math.pow(deltahp / (kh * sh), 2) +
-        rt * (deltacp / (kc * sc)) * (deltahp / (kh * sh))
+        rt * (deltacp / (kc * sc)) * (deltahp / (kh * sh)),
     );
 
     return deltaE;

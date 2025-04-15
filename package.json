@@ -8,7 +8,7 @@
   "scripts": {
     "build": "npx gulp",
     "dev": "concurrently --kill-others \"npx gulp watch\" \"npx http-server ./dist\"",
-    "lint": "npx tsc && npx eslint ./src/**/*.{ts,tsx} --fix"
+    "lint": "npx tsc && npx eslint ./src/**/*.{ts,tsx} --fix && npx stylelint **/*.css --fix && npx prettier . --write"
   },
   "devDependencies": {
     "@babel/core": "^7.26.10",
