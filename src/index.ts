@@ -51,8 +51,8 @@ function init() {
 
   const exampleImageButton = $("#example-image-button")[0];
   const resetButton = $("button[type=reset]")[0];
-  const saveButton = $("button[name=save")[0];
-  const downloadButton = $("button[name=download")[0];
+  const saveButton = $("button[name=save]")[0];
+  const downloadButton = $("button[name=download]")[0];
 
   exampleImageButton.addEventListener("click", (e) => {
     e.preventDefault();
