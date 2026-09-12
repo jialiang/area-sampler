@@ -1,6 +1,6 @@
 import React from "react";
 
-import Color from "../classes/Color";
+import namedColorsLab from "../classes/namedColors";
 
 const options = {
   transparencyType: [
@@ -100,7 +100,7 @@ export default function FormContainer() {
                 <option value="#">#hex</option>
                 <option value="hsl()">hsl()</option>
                 <option value="hsla()">hsla()</option>
-                {Color.namedColorsLab.map((color) => (
+                {namedColorsLab.map((color) => (
                   <option key={color.name} value={color.name}>
                     {color.name}
                   </option>
