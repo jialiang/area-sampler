@@ -25,8 +25,13 @@ export default class Results {
       if (copyButton) {
         copyButton.addEventListener("click", (e) => {
           e.preventDefault();
-          navigator.clipboard.writeText(textElement.value);
-          toast(`Copied ${textElement.value}`);
+
+          const value = textElement.value;
+
+          navigator.clipboard
+            .writeText(value)
+            .then(() => toast(`Copied ${value}`))
+            .catch(() => toast("Unable to copy to clipboard"));
         });
       }
 
