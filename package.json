@@ -1,9 +1,7 @@
 {
   "name": "area-sampler",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "author": "",
+  "description": "A color picker that tells you the average color of multiple neighbouring pixels.",
   "license": "ISC",
   "scripts": {
     "build": "npx gulp",
