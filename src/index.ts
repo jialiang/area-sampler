@@ -3,7 +3,7 @@ import Options from "./classes/Options";
 import Preview from "./classes/Preview";
 import Selection from "./classes/Selection";
 import Results from "./classes/Results";
-import { debounce, toast } from "./classes/Util";
+import { clamp, debounce, toast } from "./classes/Util";
 
 function init() {
   const $ = (selector: string): HTMLElement[] => Array.from(document.querySelectorAll(selector));
@@ -97,9 +97,11 @@ function init() {
   });
 
   options.onBeforeChange("opacityPercentage", () => {
-    const opacityPercent = options.opacityPercentage;
+    const opacityPercentage = options.opacityPercentage.trim();
 
-    preview.setOpacity(opacityPercent / 100);
+    if (!opacityPercentage) return;
+
+    preview.setOpacity(clamp(Number(opacityPercentage), 0, 1000) / 100);
   });
 
   const handleBackgroundSettingsChanged = () => {
