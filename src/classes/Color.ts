@@ -713,17 +713,6 @@ export default class Color {
     ];
   };
 
-  static blendColors = (background: Color, foreground: Color) => {
-    const normalFgAlpha = foreground.a / 255;
-    const normalBgAlpha = 1 - normalFgAlpha;
-
-    const channels = ["r", "g", "b"] as const;
-
-    const rgb = channels.map((c) => background[c] * normalBgAlpha + foreground[c] * normalFgAlpha);
-
-    return new Color(...rgb);
-  };
-
   r = 0; // 0-255
   g = 0; // 0-255;
   b = 0; // 0-255;
@@ -762,7 +751,7 @@ export default class Color {
     }
   }
 
-  getClosedNamedColor = () => {
+  getClosestNamedColor = () => {
     const { r, g, b } = this;
 
     const labA = Colour.rgb2lab(r, g, b);
@@ -782,18 +771,6 @@ export default class Color {
 
     return closestColorName;
   };
-
-  get rgb(): [number, number, number] {
-    const { r, g, b } = this;
-
-    return [r, g, b];
-  }
-
-  get rgba(): [number, number, number, number] {
-    const { r, g, b, a } = this;
-
-    return [r, g, b, a];
-  }
 
   toRgb() {
     const { r, g, b } = this;

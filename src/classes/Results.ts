@@ -2,15 +2,15 @@ import Color from "./Color";
 import Options from "./Options";
 import { toast } from "./Util";
 
-type resultElementInfo = {
+type ResultElementInfo = {
   textElement: HTMLInputElement;
   foregroundElement: HTMLElement;
   backgroundElement: HTMLElement;
 };
 
 export default class Results {
-  readonly resultElementArray: resultElementInfo[];
-  readonly resultElementHashmap: { [key: string]: resultElementInfo };
+  readonly resultElementArray: ResultElementInfo[];
+  readonly resultElementHashmap: { [key: string]: ResultElementInfo };
 
   constructor(resultFields: HTMLElement[]) {
     this.resultElementArray = [];
@@ -80,7 +80,7 @@ export default class Results {
     if (resultFormat === "rgb") value = includeAlpha ? color.toRgba() : color.toRgb();
     if (resultFormat === "hex") value = includeAlpha ? color.toHex8() : color.toHex6();
     if (resultFormat === "hsl") value = includeAlpha ? color.toHsla() : color.toHsl();
-    if (resultFormat === "svg") value = color.getClosedNamedColor();
+    if (resultFormat === "svg") value = color.getClosestNamedColor();
 
     if (!value) throw `Invalid resultFormat option: ${resultFormat.toString()}`;
 

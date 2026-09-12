@@ -14,24 +14,24 @@ export const clamp = (value: number, min: number, max: number) =>
   Math.max(Math.min(value, max), min);
 
 export const toast = (message: string, persist = false) => {
-  const toast = document.createElement("div");
+  const toastElement = document.createElement("div");
 
-  toast.textContent = message;
-  toast.className = `toast ${persist ? "" : "fade-out"}`;
-  toast.setAttribute("role", "status");
+  toastElement.textContent = message;
+  toastElement.className = `toast ${persist ? "" : "fade-out"}`;
+  toastElement.setAttribute("role", "status");
 
   const toastContainer = document.querySelector(".toast-container");
 
   if (toastContainer) {
-    toastContainer.appendChild(toast);
+    toastContainer.appendChild(toastElement);
 
     if (persist) {
       return () => {
-        requestAnimationFrame(() => toastContainer.removeChild(toast));
+        requestAnimationFrame(() => toastContainer.removeChild(toastElement));
       };
     } else {
       setTimeout(() => {
-        toastContainer.removeChild(toast);
+        toastContainer.removeChild(toastElement);
       }, 1500);
     }
   }

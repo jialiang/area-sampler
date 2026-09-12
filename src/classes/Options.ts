@@ -73,16 +73,16 @@ export default class Options extends OptionsProxy {
   save = () => {
     const { fieldArray } = this;
 
-    const optionsString = fieldArray.reduce(
-      (optionsObject, field) => {
-        if (field.type !== "file") optionsObject[field.name] = field.value;
+    const optionsObject = fieldArray.reduce(
+      (savedOptions, field) => {
+        if (field.type !== "file") savedOptions[field.name] = field.value;
 
-        return optionsObject;
+        return savedOptions;
       },
       {} as { [key: string]: string },
     );
 
-    localStorage.setItem("options", JSON.stringify(optionsString));
+    localStorage.setItem("options", JSON.stringify(optionsObject));
   };
 
   restore = () => {
