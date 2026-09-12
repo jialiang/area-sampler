@@ -624,7 +624,12 @@ export default class Color {
 
       const sortedValues = values.sort((a, b) => a - b);
 
-      if (averagingMethod === "squared") {
+      // Squaring compensates for the gamma encoding in sRGB.
+      // Alpha carries no such encoding, so squaring it overstates
+      // how opaque the selection is.
+      const isSquaredChannel = averagingMethod === "squared" && channel !== "a";
+
+      if (isSquaredChannel) {
         let totalSquaredValue = 0;
 
         for (let i = 0; i < values.length; i++) totalSquaredValue += Color.squaredValues[values[i]];
@@ -635,7 +640,7 @@ export default class Color {
         mean[channel] = meanValue;
       }
 
-      if (averagingMethod === "simple") {
+      if (!isSquaredChannel) {
         let totalValue = 0;
 
         for (let i = 0; i < values.length; i++) totalValue += values[i];
