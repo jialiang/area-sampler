@@ -58,16 +58,22 @@ export default class Colour {
   }
   /**
    * Convert XYZ to LAB
+   *
+   * Values are measured against a reference white, here daylight as seen by
+   * the CIE 1931 2 degree standard observer (D65/2). Upstream used the CIE
+   * 1964 10 degree observer instead, which does not match the sRGB matrix in
+   * rgb2xyz above: that matrix is defined for the 2 degree observer, so
+   * pairing it with a 10 degree white left pure white at a 0.41 and b -0.98
+   * rather than the 0 and 0 it is meant to be.
+   *
    * @param {Number} x Value
    * @param {Number} y Value
    * @param {Number} z Value
    */
   static xyz2lab(x: number, y: number, z: number) {
-    // using 10o Observer (CIE 1964)
-    // CIE10_D65 = {94.811f, 100f, 107.304f} => Daylight
-    const referenceX = 94.811;
+    const referenceX = 95.047;
     const referenceY = 100;
-    const referenceZ = 107.304;
+    const referenceZ = 108.883;
     // step 1
     x = x / referenceX;
     y = y / referenceY;

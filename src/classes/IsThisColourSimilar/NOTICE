@@ -5,3 +5,4 @@
 - Removed class methods not used by parent project.
 - Removed checks for valid RGBA ranges from rgb2xyz method.
 - Renamed rgba2lab method to rgb2lab.
+- Changed the xyz2lab reference white from the CIE 1964 10 degree observer to the CIE 1931 2 degree observer, to match the sRGB matrix used by rgb2xyz.
