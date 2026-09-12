@@ -1,6 +1,8 @@
 import { SimpleColor } from "./Color";
 import { debounce, toast, isNil } from "./Util";
 
+type ResolveColors = (colors: Uint8ClampedArray | PromiseLike<Uint8ClampedArray>) => void;
+
 export default class Preview {
   readonly preview: HTMLCanvasElement;
   readonly uploader: HTMLInputElement;
@@ -12,6 +14,7 @@ export default class Preview {
   private imageBitmap: ImageBitmap | undefined;
   private imageValues: Uint8ClampedArray | undefined;
   private colors: Promise<Uint8ClampedArray> | undefined;
+  private resolveColors: ResolveColors | undefined;
 
   private loadingToast: (() => void) | undefined;
 
@@ -160,9 +163,16 @@ export default class Preview {
   });
 
   handleUpdateImage = () => {
+    const previousResolve = this.resolveColors;
+
     this.colors = new Promise((resolve) => {
+      this.resolveColors = resolve;
       this._handleUpdateImage(resolve);
     });
+
+    // Have old promises adopt later promises,
+    // so that when the latest resolves, they resolve to the same value
+    if (previousResolve) previousResolve(this.colors);
   };
 
   loadExampleImage = () => {
@@ -186,13 +196,7 @@ export default class Preview {
 
     if (!this.colors) return [];
 
-    let colors;
-    let resolvedColors = [] as Uint8ClampedArray | [];
-
-    while (colors !== this.colors) {
-      colors = this.colors;
-      resolvedColors = await colors;
-    }
+    const resolvedColors = await this.colors;
 
     const targetColors = [] as SimpleColor[];
 
