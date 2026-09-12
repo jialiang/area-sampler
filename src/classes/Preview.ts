@@ -25,7 +25,7 @@ export default class Preview {
     uploaderElement.addEventListener("change", () => {
       const { uploader } = this;
 
-      if (!uploader.files) return;
+      if (!uploader.files || !uploader.files.length) return;
 
       this.loadingToast = toast("Loading selected image...", true);
       this.handleReadUpload(uploader.files[0]);
@@ -38,10 +38,10 @@ export default class Preview {
     previewElement.addEventListener("drop", (e) => {
       e.preventDefault();
 
-      if (!e.dataTransfer) return;
+      if (!e.dataTransfer || !e.dataTransfer.files.length) return;
 
-      this.loadingToast = toast("Loading selected image...", true);
-      this.handleReadUpload(e.dataTransfer.files[0]);
+      uploaderElement.files = e.dataTransfer.files;
+      uploaderElement.dispatchEvent(new Event("change"));
     });
 
     this.preview = previewElement;
