@@ -622,7 +622,7 @@ export default class Color {
 
       for (let i = 0; i < colors.length; i++) values.push(colors[i][channel]);
 
-      const sortedValues = values.sort();
+      const sortedValues = values.sort((a, b) => a - b);
 
       if (averagingMethod === "squared") {
         let totalSquaredValue = 0;
