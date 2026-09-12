@@ -1,0 +1,6 @@
+* text=auto eol=lf
+
+*.png binary
+
+# Batch files are read by cmd.exe, which is not reliable without CRLF.
+*.bat text eol=crlf
