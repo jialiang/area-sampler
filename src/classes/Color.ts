@@ -653,8 +653,6 @@ export default class Color {
     return [mean, median];
   };
 
-  static colorToLightness = {} as { [key: string]: number };
-
   static getLightestDarkest = (colors: (Color | SimpleColor)[]) => {
     if (colors.length === 0) return [new Color(), new Color()];
 
@@ -675,6 +673,8 @@ export default class Color {
       return Math.pow(luminance, 1 / 3) * 116 - 16;
     };
 
+    const colorToLightness = new Map<number, number>();
+
     let lightestValue = -1;
     let darkestValue = 101;
 
@@ -682,11 +682,14 @@ export default class Color {
     let darkestColor = colors[0];
 
     colors.forEach((color) => {
-      const colorId = `${color.r}-${color.g}-${color.b}`;
+      const colorId = (color.r << 16) | (color.g << 8) | color.b;
 
-      let lightness = Color.colorToLightness[colorId];
+      let lightness = colorToLightness.get(colorId);
 
-      if (!lightness) Color.colorToLightness[colorId] = lightness = getLightness(color);
+      if (lightness === undefined) {
+        lightness = getLightness(color);
+        colorToLightness.set(colorId, lightness);
+      }
 
       if (lightness > lightestValue) {
         lightestValue = lightness;
