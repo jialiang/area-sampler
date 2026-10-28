@@ -8,6 +8,13 @@
     "dev": "concurrently --kill-others \"npx gulp watch\" \"npx http-server ./dist\"",
     "lint": "npx tsc && npx eslint ./src/**/*.{ts,tsx} --fix && npx stylelint **/*.css --fix && npx prettier . --write"
   },
+  "browserslist": [
+    "chrome >= 92",
+    "firefox >= 90",
+    "safari >= 15",
+    "ios_saf >= 15",
+    "edge >= 92"
+  ],
   "devDependencies": {
     "@babel/core": "^7.26.10",
     "@babel/preset-env": "^7.26.9",

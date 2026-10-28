@@ -3,10 +3,10 @@
     [
       "@babel/preset-env",
       {
-        "targets": "defaults",
         "modules": "cjs",
         "useBuiltIns": "usage",
-        "corejs": 3
+        "corejs": 3,
+        "exclude": ["es.typed-array.set"]
       }
     ],
     "@babel/preset-react",
